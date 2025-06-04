@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Payment Gateway</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            100: '#1E293B',
+                            200: '#0F172A',
+                            300: '#0B1120',
+                            400: '#1E293B',
+                            500: '#334155',
+                            600: '#475569',
+                            700: '#64748B',
+                            800: '#94A3B8',
+                            900: '#CBD5E1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+        
+        .card-container {
+            perspective: 1000px;
+        }
+        
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .card-container.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        
+        .currency-flag {
+            width: 20px;
+            height: 15px;
+            display: inline-block;
+            margin-right: 8px;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .currency-dropdown {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        /* Dark mode transition */
+        .dark-mode-transition {
+            transition: background-color 0.3s ease, 
+                        color 0.3s ease, 
+                        border-color 0.3s ease, 
+                        box-shadow 0.3s ease;
+        }
+        
+        /* Toggle switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #4F46E5;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .dark ::-webkit-scrollbar-track {
+            background: #1E293B;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #64748B;
+        }
+        
+        /* Payment method tabs scrolling */
+        .payment-tabs {
+            overflow-x: auto;
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        
+        .payment-tabs::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+        
+        /* Radio buttons styling */
+        .radio-card:checked + label {
+            border-color: #4F46E5;
+            background-color: #EEF2FF;
+        }
+        
+        .dark .radio-card:checked + label {
+            border-color: #6366F1;
+            background-color: #1E293B;
+        }
+        
+        /* Installment slider */
+        .installment-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #E5E7EB;
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .dark .installment-slider {
+            background: #334155;
+        }
+        
+        .installment-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #4F46E5;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .dark .installment-slider::-webkit-slider-thumb {
+            background: #6366F1;
+        }
+        
+        .installment-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #4F46E5;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .dark .installment-slider::-moz-range-thumb {
+            background: #6366F1;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-dark-200 min-h-screen flex items-center justify-center p-4 md:p-8 dark-mode-transition">
+    <div class="max-w-6xl w-full bg-white dark:bg-dark-100 rounded-xl shadow-lg overflow-hidden dark-mode-transition">
+        
+        <!-- Header -->
+        <div class="bg-indigo-600 dark:bg-indigo-800 p-6 text-white flex justify-between items-center dark-mode-transition">
+            <div>
+                <h1 class="text-xl md:text-2xl font-semibold">Global Payment Gateway</h1>
+                <p class="text-indigo-100 text-sm md:text-base mt-1">Complete your purchase with worldwide currency support</p>
+            </div>
+            
+            <!-- Dark Mode Toggle -->
+            <div class="flex items-center">
+                <button id="theme-toggle" type="button" title="Toggle dark mode" class="p-2 rounded-full hover:bg-indigo-700 dark:hover:bg-indigo-900 focus:outline-none">
+                    <!-- Sun icon -->
+                    <svg id="sun-icon" class="w-5 h-5 text-yellow-300 hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <!-- Moon icon -->
+                    <svg id="moon-icon" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content - Desktop Two Column Layout -->
+        <div class="flex flex-col md:flex-row">
+            <!-- Left Column - Order Summary -->
+            <div class="md:w-1/3 md:border-r border-gray-200 dark:border-dark-500 dark-mode-transition">
+                <!-- Currency Selector -->
+                <div class="p-6 border-b border-gray-200 dark:border-dark-500 dark-mode-transition">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-dark-900 mb-2 dark-mode-transition">Select Currency</label>
+                    <div class="relative">
+                        <select id="currency-selector" title="Select currency" class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
+                            <option value="USD" data-symbol="$" data-rate="1">USD - US Dollar ($)</option>
+                            <option value="EUR" data-symbol="€" data-rate="0.91">EUR - Euro (€)</option>
+                            <option value="GBP" data-symbol="£" data-rate="0.78">GBP - British Pound (£)</option>
+                            <option value="JPY" data-symbol="¥" data-rate="149.82">JPY - Japanese Yen (¥)</option>
+                            <option value="CAD" data-symbol="C$" data-rate="1.36">CAD - Canadian Dollar (C$)</option>
+                            <option value="AUD" data-symbol="A$" data-rate="1.51">AUD - Australian Dollar (A$)</option>
+                            <option value="CNY" data-symbol="¥" data-rate="7.24">CNY - Chinese Yuan (¥)</option>
+                            <option value="INR" data-symbol="₹" data-rate="83.36">INR - Indian Rupee (₹)</option>
+                            <option value="BRL" data-symbol="R$" data-rate="5.05">BRL - Brazilian Real (R$)</option>
+                            <option value="RUB" data-symbol="₽" data-rate="92.30">RUB - Russian Ruble (₽)</option>
+                            <option value="ZAR" data-symbol="R" data-rate="18.31">ZAR - South African Rand (R)</option>
+                            <option value="SGD" data-symbol="S$" data-rate="1.34">SGD - Singapore Dollar (S$)</option>
+                            <option value="MXN" data-symbol="$" data-rate="16.73">MXN - Mexican Peso ($)</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-dark-900 dark-mode-transition">
+                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Summary -->
+                <div class="p-6">
+                    <h2 class="text-lg md:text-xl font-medium text-gray-900 dark:text-white mb-6 dark-mode-transition">Order Summary</h2>
+                    
+                    <!-- Product List -->
+                    <div class="space-y-4 mb-6">
+                        <div class="flex items-center">
+                            <div class="bg-gray-200 dark:bg-dark-400 rounded-md w-16 h-16 flex items-center justify-center mr-4 dark-mode-transition">
+                                <svg class="w-8 h-8 text-gray-500 dark:text-dark-800" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Premium Product</h3>
+                                <p class="text-sm text-gray-500 dark:text-dark-700 dark-mode-transition">1 × <span class="price-item" data-amount="89.99">$89.99</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Price Breakdown -->
+                    <div class="space-y-3 border-t border-gray-200 dark:border-dark-500 pt-4 dark-mode-transition">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 dark:text-dark-800 dark-mode-transition">Product Total</span>
+                            <span class="price-item font-medium dark:text-white dark-mode-transition" data-amount="89.99">$89.99</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 dark:text-dark-800 dark-mode-transition">Shipping</span>
+                            <span class="price-item font-medium dark:text-white dark-mode-transition" data-amount="4.99">$4.99</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600 dark:text-dark-800 dark-mode-transition">Tax</span>
+                            <span class="price-item font-medium dark:text-white dark-mode-transition" data-amount="9.50">$9.50</span>
+                        </div>
+                        <div class="pt-3 border-t border-gray-200 dark:border-dark-500 flex justify-between dark-mode-transition">
+                            <span class="font-medium text-gray-900 dark:text-white dark-mode-transition">Total</span>
+                            <span id="total-price" class="font-medium text-gray-900 dark:text-white dark-mode-transition" data-amount="104.48">$104.48</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Secure Badge -->
+                    <div class="mt-8 flex items-center justify-center p-4 bg-gray-50 dark:bg-dark-400 rounded-lg dark-mode-transition">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <span class="text-sm text-gray-600 dark:text-dark-800 dark-mode-transition">Secure Payment Processing</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Payment Form -->
+            <div class="md:w-2/3 p-6">
+                <h2 class="text-lg md:text-xl font-medium text-gray-900 dark:text-white mb-6 dark-mode-transition">Payment Method</h2>
+                
+                <!-- Payment Tabs -->
+                <div class="payment-tabs flex border-b border-gray-200 dark:border-dark-500 mb-6 overflow-x-auto dark-mode-transition">
+                    <button id="tab-card" class="whitespace-nowrap px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 dark-mode-transition">Credit/Debit Card</button>
+                    <button id="tab-wallet" class="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Mobile Wallets</button>
+                    <button id="tab-installment" class="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Installments</button>
+                    <button id="tab-paypal" class="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">PayPal</button>
+                    <button id="tab-bank" class="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Bank Transfer</button>
+                </div>
+                
+                <!-- Credit/Debit Card Form -->
+                <div id="form-card" class="space-y-6">
+                    <!-- Card Type Selection -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <input type="radio" id="credit-card" name="card-type" value="credit" class="radio-card hidden" checked>
+                            <label for="credit-card" class="flex items-center p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
+                                <div class="w-6 h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-3 dark-mode-transition">
+                                    <div class="w-3 h-3 rounded-full bg-indigo-600 dark:bg-indigo-400"></div>
+                                </div>
+                                <div>
+                                    <span class="block text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Credit Card</span>
+                                    <span class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition">Visa, Mastercard, Amex, etc.</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="radio" id="debit-card" name="card-type" value="debit" class="radio-card hidden">
+                            <label for="debit-card" class="flex items-center p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
+                                <div class="w-6 h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-3 dark-mode-transition">
+                                    <div class="w-3 h-3 rounded-full bg-indigo-600 dark:bg-indigo-400 opacity-0"></div>
+                                </div>
+                                <div>
+                                    <span class="block text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Debit Card</span>
+                                    <span class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition">Visa Debit, Maestro,etc.</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Display -->
+                    <div class="card-container h-56 md:h-64 mb-6 relative max-w-lg mx-auto">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-900 dark:to-black rounded-xl p-6 h-full flex flex-col justify-between text-white shadow-lg dark-mode-transition">
+                                    <div class="flex justify-between">
+                                        <div class="text-xs uppercase tracking-wider opacity-80">
+                                            <span id="card-type-display">Credit Card</span>
+                                        </div>
+                                        <div id="card-brand" class="text-sm font-medium">VISA</div>
+                                    </div>
+                                    
+                                    <div class="my-6">
+                                        <div class="w-12 h-10 mb-4">
+                                            <svg class="w-full h-full" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M44 12H4C2.89543 12 2 12.8954 2 14V34C2 35.1046 2.89543 36 4 36H44C45.1046 36 46 35.1046 46 34V14C46 12.8954 45.1046 12 44 12Z" stroke="white" stroke-width="2"/>
+                                                <path d="M2 18H46" stroke="white" stroke-width="2"/>
+                                            </svg>
+                                        </div>
+                                        <div id="card-number-display" class="font-mono tracking-widest text-xl md:text-2xl">•••• •••• •••• ••••</div>
+                                    </div>
+                                    
+                                    <div class="flex justify-between items-end">
+                                        <div>
+                                            <div class="text-xs opacity-80">Card Holder</div>
+                                            <div id="name-display" class="font-medium mt-1 text-sm md:text-base">YOUR NAME</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs opacity-80">Expires</div>
+                                            <div id="expiry-display" class="font-medium mt-1 text-sm md:text-base">MM/YY</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-back">
+                                <div class="bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-900 dark:to-black rounded-xl h-full flex flex-col text-white shadow-lg dark-mode-transition">
+                                    <div class="bg-gray-800 dark:bg-black h-12 mt-6 dark-mode-transition"></div>
+                                    <div class="px-6 py-4 flex-grow flex flex-col justify-center">
+                                        <div class="flex justify-end items-center">
+                                            <div class="text-xs opacity-80 mr-2">CVV</div>
+                                            <div id="cvv-display" class="bg-gray-700 bg-opacity-80 dark:bg-gray-900 dark:bg-opacity-80 text-white rounded px-3 py-2 w-20 text-center font-mono text-lg tracking-widest dark-mode-transition shadow" style="letter-spacing: 0.2em;">•••</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Fields -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Cardholder Name</label>
+                            <input type="text" id="name" placeholder="Name on card" class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Card Number</label>
+                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Expiry Date</label>
+                            <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">CVV</label>
+                            <input type="text" id="cvv" placeholder="123" maxlength="4" class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile Wallets Form -->
+                <div id="form-wallet" class="hidden space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Apple Pay -->
+                        <div>
+                            <input type="radio" id="apple-pay" name="wallet-type" value="apple" class="radio-card hidden" checked>
+                            <label for="apple-pay" class="flex flex-col items-center p-6 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition h-full">
+                                <div class="w-12 h-12 mb-4">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M18.7101 12.6754C18.7242 10.9892 19.6992 9.43546 21.2101 8.61377C20.3101 7.30377 18.8901 6.54377 17.3801 6.48377C15.7801 6.31377 14.2501 7.41377 13.4401 7.41377C12.6101 7.41377 11.3501 6.50377 10.0001 6.53377C8.21008 6.58377 6.58008 7.59377 5.68008 9.13377C3.78008 12.2138 5.15008 16.7938 7.00008 19.2138C7.92008 20.3938 8.98008 21.7138 10.3901 21.6638C11.7701 21.6138 12.3001 20.7938 13.9501 20.7938C15.5701 20.7938 16.0701 21.6638 17.5001 21.6338C18.9701 21.6138 19.9401 20.4538 20.8301 19.2638C21.5301 18.3438 22.0501 17.2938 22.3701 16.1738C20.5301 15.3638 19.3701 13.6138 18.7101 12.6754Z" fill="currentColor" class="text-gray-900 dark:text-white dark-mode-transition"/>
+                                        <path d="M16.7999 4.58C17.5999 3.58 18.0999 2.22 17.9999 1C16.7999 1.1 15.6999 1.69 14.8999 2.61C14.1999 3.41 13.5999 4.69 13.7999 6C15.0999 6.08 16.0999 5.58 16.7999 4.58Z" fill="currentColor" class="text-gray-900 dark:text-white dark-mode-transition"/>
+                                    </svg>
+                                </div>
+                                <span class="block text-base font-medium text-gray-900 dark:text-white mb-1 dark-mode-transition">Apple Pay</span>
+                                <span class="text-xs text-gray-500 dark:text-dark-700 text-center dark-mode-transition">Pay securely with your Apple device</span>
+                            </label>
+                        </div>
+                        
+                        <!-- Google Pay -->
+                        <div>
+                            <input type="radio" id="google-pay" name="wallet-type" value="google" class="radio-card hidden">
+                            <label for="google-pay" class="flex flex-col items-center p-6 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition h-full">
+                                <div class="w-12 h-12 mb-4">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M21.5 11.9999C21.5 11.1799 21.43 10.3899 21.3 9.63989H12V13.2799H17.36C17.15 14.3599 16.46 15.2599 15.41 15.8599V18.0399H18.46C20.21 16.4099 21.5 14.4199 21.5 11.9999Z" fill="#4285F4"/>
+                                        <path d="M12 22C14.7 22 16.96 21.07 18.46 19.04L15.41 16.86C14.56 17.41 13.42 17.75 12 17.75C9.47 17.75 7.34 16.06 6.5 13.78H3.35V16.03C4.84 19.57 8.14 22 12 22Z" fill="#34A853"/>
+                                        <path d="M6.5 13.7799C6.32 13.1699 6.22 12.5299 6.22 11.8699C6.22 11.2099 6.32 10.5699 6.5 9.95988V7.70988H3.35C2.67 9.03988 2.25 10.5299 2.25 11.8699C2.25 13.2099 2.67 14.6999 3.35 16.0299L6.5 13.7799Z" fill="#FBBC05"/>
+                                        <path d="M12 6C13.38 6 14.63 6.48 15.61 7.42L18.31 4.72C16.95 3.45 14.7 2.75 12 2.75C8.14 2.75 4.84 5.18 3.35 8.72L6.5 10.97C7.34 8.69 9.47 7 12 7V6Z" fill="#EA4335"/>
+                                    </svg>
+                                </div>
+                                <span class="block text-base font-medium text-gray-900 dark:text-white mb-1 dark-mode-transition">Google Pay</span>
+                                <span class="text-xs text-gray-500 dark:text-dark-700 text-center dark-mode-transition">Fast checkout with Google</span>
+                            </label>
+                        </div>
+                        
+                        <!-- Samsung Pay -->
+                        <div>
+                            <input type="radio" id="samsung-pay" name="wallet-type" value="samsung" class="radio-card hidden">
+                            <label for="samsung-pay" class="flex flex-col items-center p-6 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition h-full">
+                                <div class="w-12 h-12 mb-4">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.8 5.8H4.2C3.54 5.8 3 6.34 3 7V17C3 17.66 3.54 18.2 4.2 18.2H19.8C20.46 18.2 21 17.66 21 17V7C21 6.34 20.46 5.8 19.8 5.8Z" fill="currentColor" class="text-gray-900 dark:text-white dark-mode-transition"/>
+                                        <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" fill="#1428A0"/>
+                                        <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" fill="white"/>
+                                    </svg>
+                                </div>
+                                <span class="block text-base font-medium text-gray-900 dark:text-white mb-1 dark-mode-transition">Samsung Pay</span>
+                                <span class="text-xs text-gray-500 dark:text-dark-700 text-center dark-mode-transition">Pay with your Samsung device</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 dark:bg-dark-400 p-6 rounded-lg mt-4 dark-mode-transition">
+                        <h3 class="text-base font-medium text-gray-900 dark:text-white mb-4 dark-mode-transition">How to pay with mobile wallet</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-sm text-gray-600 dark:text-dark-800 dark-mode-transition">
+                            <li>Click the "Pay with Mobile Wallet" button below</li>
+                            <li>A QR code will appear on your screen</li>
+                            <li>Scan the QR code with your mobile device</li>
+                            <li>Complete the payment using your selected wallet app</li>
+                        </ol>
+                        
+                        <div class="mt-6">
+                            <button class="w-full bg-indigo-600 dark:bg-indigo-700 text-white px-4 py-3 rounded-md font-medium hover:bg-indigo-700 dark:hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark-mode-transition">
+                                Pay with Mobile Wallet
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Installment Payment Form -->
+                <div id="form-installment" class="hidden space-y-6">
+                    <div class="bg-gray-50 dark:bg-dark-400 p-6 rounded-lg dark-mode-transition">
+                        <h3 class="text-base font-medium text-gray-900 dark:text-white mb-4 dark-mode-transition">Choose your installment plan</h3>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-dark-900 mb-2 dark-mode-transition">Number of installments</label>
+                            <input type="range" id="installment-slider" min="3" max="12" step="3" value="3" class="installment-slider w-full" title="Number of installments">
+                            <div class="flex justify-between mt-2 text-xs text-gray-500 dark:text-dark-700 dark-mode-transition">
+                                <span>3 months</span>
+                                <span>6 months</span>
+                                <span>9 months</span>
+                                <span>12 months</span>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-gray-200 dark:border-dark-500 pt-4 dark-mode-transition">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm text-gray-600 dark:text-dark-800 dark-mode-transition">Selected plan:</span>
+                                <span id="installment-months" class="text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">3 monthly payments</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm text-gray-600 dark:text-dark-800 dark-mode-transition">Monthly payment:</span>
+                                <span id="installment-amount" class="text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">$34.83</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600 dark:text-dark-800 dark-mode-transition">Total payment:</span>
+                                <span id="installment-total" class="text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">$104.48</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <h3 class="text-base font-medium text-gray-900 dark:text-white dark-mode-transition">Select payment provider</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Klarna -->
+                            <div>
+                                <input type="radio" id="klarna" name="installment-provider" value="klarna" class="radio-card hidden" checked>
+                                <label for="klarna" class="flex items-center p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
+                                    <div class="w-6 h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-3 dark-mode-transition">
+                                        <div class="w-3 h-3 rounded-full bg-indigo-600 dark:bg-indigo-400"></div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="block text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Klarna</span>
+                                        <span class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition">Pay over time</span>
+                                    </div>
+                                    <div class="w-8 h-8 ml-2">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="24" height="24" rx="4" fill="#FFB3C7"/>
+                                            <path d="M12 7C13.1046 7 14 6.10457 14 5C14 3.89543 13.1046 3 12 3C10.8954 3 10 3.89543 10 5C10 6.10457 10.8954 7 12 7Z" fill="black"/>
+                                            <path d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z" fill="black"/>
+                                            <path d="M12 21C13.1046 21 14 20.1046 14 19C14 17.8954 13.1046 17 12 17C10.8954 17 10 17.8954 10 19C10 20.1046 10.8954 21 12 21Z" fill="black"/>
+                                        </svg>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <!-- Affirm -->
+                            <div>
+                                <input type="radio" id="affirm" name="installment-provider" value="affirm" class="radio-card hidden">
+                                <label for="affirm" class="flex items-center p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
+                                    <div class="w-6 h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-3 dark-mode-transition">
+                                        <div class="w-3 h-3 rounded-full bg-indigo-600 dark:bg-indigo-400 opacity-0"></div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="block text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Affirm</span>
+                                        <span class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition">Split payments</span>
+                                    </div>
+                                    <div class="w-8 h-8 ml-2">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="24" height="24" rx="4" fill="#0FA0EA"/>
+                                            <path d="M7 12L10 15L17 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <!-- Afterpay -->
+                            <div>
+                                <input type="radio" id="afterpay" name="installment-provider" value="afterpay" class="radio-card hidden">
+                                <label for="afterpay" class="flex items-center p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
+                                    <div class="w-6 h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-3 dark-mode-transition">
+                                        <div class="w-3 h-3 rounded-full bg-indigo-600 dark:bg-indigo-400 opacity-0"></div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="block text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Afterpay</span>
+                                        <span class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition">Buy now, pay later</span>
+                                    </div>
+                                    <div class="w-8 h-8 ml-2">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect width="24" height="24" rx="4" fill="#B2FCE4"/>
+                                            <path d="M12 4L9 12H15L12 20" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4">
+                            <button id="installment-button" class="w-full bg-indigo-600 dark:bg-indigo-700 text-white px-4 py-3 rounded-md font-medium hover:bg-indigo-700 dark:hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark-mode-transition">
+                                Continue with Installments
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- PayPal Form -->
+                <div id="form-paypal" class="hidden space-y-6">
+                    <div class="bg-gray-50 dark:bg-dark-400 p-8 rounded-lg text-center dark-mode-transition">
+                        <svg class="w-20 h-20 mx-auto mb-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19.5 8.5C19.5 11 17.5 13 15 13H12L11 17H8L10 7H15C17.5 7 19.5 6 19.5 8.5Z" fill="#003087"/>
+                            <path d="M17.5 10.5C17.5 13 15.5 15 13 15H10L9 19H6L8 9H13C15.5 9 17.5 8 17.5 10.5Z" fill="#009CDE"/>
+                        </svg>
+                        <p class="text-base text-gray-600 dark:text-dark-800 mb-4 dark-mode-transition">Click the button below to pay with PayPal</p>
+                        <button class="bg-[#0070ba] text-white px-6 py-3 rounded-md font-medium hover:bg-[#005ea6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0070ba]">
+                            Pay with PayPal
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Bank Transfer Form -->
+                <div id="form-bank" class="hidden space-y-6">
+                    <div class="bg-gray-50 dark:bg-dark-400 p-6 rounded-lg dark-mode-transition">
+                        <h3 class="font-medium text-gray-900 dark:text-white mb-4 text-lg dark-mode-transition">Bank Transfer Details</h3>
+                        <div class="space-y-4 text-sm text-gray-600 dark:text-dark-800 dark-mode-transition">
+                            <p>Please transfer the total amount to the following bank account:</p>
+                            <div class="grid grid-cols-3 gap-2">
+                                <span class="font-medium">Bank Name:</span>
+                                <span class="col-span-2">Global Bank</span>
+                                
+                                <span class="font-medium">Account Name:</span>
+                                <span class="col-span-2">Demo Company Ltd</span>
+                                
+                                <span class="font-medium">Account Number:</span>
+                                <span class="col-span-2">1234567890</span>
+                                
+                                <span class="font-medium">Sort Code:</span>
+                                <span class="col-span-2">12-34-56</span>
+                                
+                                <span class="font-medium">IBAN:</span>
+                                <span class="col-span-2">GB29NWBK60161331926819</span>
+                                
+                                <span class="font-medium">Reference:</span>
+                                <span class="col-span-2">ORDER-12345</span>
+                            </div>
+                            
+                            <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-md mt-4 dark-mode-transition">
+                                <div class="flex">
+                                    <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-yellow-700 dark:text-yellow-200">
+                                            Please include your order reference in the payment description to help us identify your payment.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button id="bank-button" class="w-full bg-indigo-600 dark:bg-indigo-700 text-white px-4 py-3 rounded-md font-medium hover:bg-indigo-700 dark:hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark-mode-transition">
+                            I've Made the Transfer
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Payment Button -->
+                <div id="card-payment-button" class="mt-8">
+                    <button id="pay-button" class="w-full bg-indigo-600 dark:bg-indigo-700 text-white px-6 py-4 rounded-md font-medium text-lg hover:bg-indigo-700 dark:hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark-mode-transition">
+                        Pay <span id="pay-button-amount">$104.48</span>
+                    </button>
+                    
+                    <div class="flex items-center justify-center mt-4 text-xs text-gray-500 dark:text-dark-700 dark-mode-transition">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        <span>Secure checkout - your payment will be processed</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="bg-white dark:bg-dark-100 rounded-lg p-8 max-w-md w-full z-10 dark-mode-transition">
+            <div class="flex justify-center mb-6">
+                <div class="rounded-full bg-green-100 dark:bg-green-900 p-4 dark-mode-transition">
+                    <svg class="w-10 h-10 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-xl font-medium text-center text-gray-900 dark:text-white mb-2 dark-mode-transition">Payment Successful!</h3>
+            <p class="text-base text-gray-600 dark:text-dark-800 text-center mb-6 dark-mode-transition">Your payment has been processed successfully.</p>
+            <div class="border-t border-gray-200 dark:border-dark-500 pt-4 mt-2 dark-mode-transition">
+                <div class="flex justify-between text-base mb-2">
+                    <span class="text-gray-600 dark:text-dark-800 dark-mode-transition">Amount Paid:</span>
+                    <span id="success-amount" class="font-medium dark:text-white dark-mode-transition">$104.48</span>
+                </div>
+                <div class="flex justify-between text-base mb-2">
+                    <span class="text-gray-600 dark:text-dark-800 dark-mode-transition">Currency:</span>
+                    <span id="success-currency" class="font-medium dark:text-white dark-mode-transition">USD</span>
+                </div>
+                <div class="flex justify-between text-base mb-2">
+                    <span class="text-gray-600 dark:text-dark-800 dark-mode-transition">Payment Method:</span>
+                    <span id="success-method" class="font-medium dark:text-white dark-mode-transition">Credit Card</span>
+                </div>
+                <div class="flex justify-between text-base">
+                    <span class="text-gray-600 dark:text-dark-800 dark-mode-transition">Transaction ID:</span>
+                    <span class="font-medium dark:text-white dark-mode-transition">TXN123456789</span>
+                </div>
+            </div>
+            <button id="close-modal" class="w-full mt-6 bg-indigo-600 dark:bg-indigo-700 text-white px-4 py-3 rounded-md font-medium hover:bg-indigo-700 dark:hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark-mode-transition">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Dark mode functionality
+        const htmlElement = document.documentElement;
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+        
+        // Check for saved theme preference or use system preference
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+            enableDarkMode();
+        } else {
+            disableDarkMode();
+        }
+        
+        function enableDarkMode() {
+            htmlElement.classList.add('dark');
+            sunIcon.classList.remove('hidden');
+            moonIcon.classList.add('hidden');
+            localStorage.setItem('theme', 'dark');
+        }
+        
+        function disableDarkMode() {
+            htmlElement.classList.remove('dark');
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
+            localStorage.setItem('theme', 'light');
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            if (htmlElement.classList.contains('dark')) {
+                disableDarkMode();
+            } else {
+                enableDarkMode();
+            }
+        });
+        
+        // Card display functionality
+        const cardContainer = document.querySelector('.card-container');
+        const nameInput = document.getElementById('name');
+        const cardNumberInput = document.getElementById('card-number');
+        const expiryInput = document.getElementById('expiry');
+        const cvvInput = document.getElementById('cvv');
+        
+        const nameDisplay = document.getElementById('name-display');
+        const cardNumberDisplay = document.getElementById('card-number-display');
+        const expiryDisplay = document.getElementById('expiry-display');
+        const cvvDisplay = document.getElementById('cvv-display');
+        const cardBrand = document.getElementById('card-brand');
+        const cardTypeDisplay = document.getElementById('card-type-display');
+        
+        // Card type selection
+        const creditCardRadio = document.getElementById('credit-card');
+        const debitCardRadio = document.getElementById('debit-card');
+        
+        creditCardRadio.addEventListener('change', function() {
+            if (this.checked) {
+                cardTypeDisplay.textContent = 'Credit Card';
+            }
+        });
+        
+        debitCardRadio.addEventListener('change', function() {
+            if (this.checked) {
+                cardTypeDisplay.textContent = 'Debit Card';
+            }
+        });
+        
+        // Format card number with spaces
+        cardNumberInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = '';
+            
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            
+            e.target.value = formattedValue;
+            
+            // Update card display
+            cardNumberDisplay.textContent = formattedValue || '•••• •••• •••• ••••';
+            
+            // Detect card type
+            if (value.startsWith('4')) {
+                cardBrand.textContent = 'VISA';
+            } else if (/^5[1-5]/.test(value)) {
+                cardBrand.textContent = 'MASTERCARD';
+            } else if (/^3[47]/.test(value)) {
+                cardBrand.textContent = 'AMEX';
+            } else if (/^6(?:011|5)/.test(value)) {
+                cardBrand.textContent = 'DISCOVER';
+            } else {
+                cardBrand.textContent = 'CARD';
+            }
+        });
+        
+        // Format expiry date
+        expiryInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            
+            e.target.value = value;
+            expiryDisplay.textContent = value || 'MM/YY';
+        });
+        
+        // Update name display
+        nameInput.addEventListener('input', function(e) {
+            nameDisplay.textContent = e.target.value || 'YOUR NAME';
+        });
+        
+        // Flip card when focusing on CVV
+        cvvInput.addEventListener('focus', function() {
+            cardContainer.classList.add('flipped');
+        });
+        
+        cvvInput.addEventListener('blur', function() {
+            cardContainer.classList.remove('flipped');
+        });
+        
+        cvvInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value;
+            cvvDisplay.textContent = value || '•••';
+        });
+        
+        // Tab switching
+        const tabCard = document.getElementById('tab-card');
+        const tabWallet = document.getElementById('tab-wallet');
+        const tabInstallment = document.getElementById('tab-installment');
+        const tabPaypal = document.getElementById('tab-paypal');
+        const tabBank = document.getElementById('tab-bank');
+        
+        const formCard = document.getElementById('form-card');
+        const formWallet = document.getElementById('form-wallet');
+        const formInstallment = document.getElementById('form-installment');
+        const formPaypal = document.getElementById('form-paypal');
+        const formBank = document.getElementById('form-bank');
+        
+        const cardPaymentButton = document.getElementById('card-payment-button');
+        
+        function resetTabs() {
+            // Hide all forms
+            formCard.classList.add('hidden');
+            formWallet.classList.add('hidden');
+            formInstallment.classList.add('hidden');
+            formPaypal.classList.add('hidden');
+            formBank.classList.add('hidden');
+            
+            // Reset all tab styles
+            tabCard.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
+            tabCard.classList.add('text-gray-500', 'dark:text-dark-800');
+            
+            tabWallet.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
+            tabWallet.classList.add('text-gray-500', 'dark:text-dark-800');
+            
+            tabInstallment.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
+            tabInstallment.classList.add('text-gray-500', 'dark:text-dark-800');
+            
+            tabPaypal.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
+            tabPaypal.classList.add('text-gray-500', 'dark:text-dark-800');
+            
+            tabBank.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
+            tabBank.classList.add('text-gray-500', 'dark:text-dark-800');
+            
+            // Hide default payment button
+            cardPaymentButton.classList.add('hidden');
+        }
+        
+        tabCard.addEventListener('click', function() {
+            resetTabs();
+            formCard.classList.remove('hidden');
+            cardPaymentButton.classList.remove('hidden');
+            tabCard.classList.add('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
+            tabCard.classList.remove('text-gray-500', 'dark:text-dark-800');
+        });
+        
+        tabWallet.addEventListener('click', function() {
+            resetTabs();
+            formWallet.classList.remove('hidden');
+            tabWallet.classList.add('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
+            tabWallet.classList.remove('text-gray-500', 'dark:text-dark-800');
+        });
+        
+        tabInstallment.addEventListener('click', function() {
+            resetTabs();
+            formInstallment.classList.remove('hidden');
+            tabInstallment.classList.add('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
+            tabInstallment.classList.remove('text-gray-500', 'dark:text-dark-800');
+        });
+        
+        tabPaypal.addEventListener('click', function() {
+            resetTabs();
+            formPaypal.classList.remove('hidden');
+            tabPaypal.classList.add('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
+            tabPaypal.classList.remove('text-gray-500', 'dark:text-dark-800');
+        });
+        
+        tabBank.addEventListener('click', function() {
+            resetTabs();
+            formBank.classList.remove('hidden');
+            tabBank.classList.add('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
+            tabBank.classList.remove('text-gray-500', 'dark:text-dark-800');
+        });
+        
+        // Currency conversion
+        const currencySelector = document.getElementById('currency-selector');
+        const priceItems = document.querySelectorAll('.price-item');
+        const totalPrice = document.getElementById('total-price');
+        const payButtonAmount = document.getElementById('pay-button-amount');
+        const successAmount = document.getElementById('success-amount');
+        const successCurrency = document.getElementById('success-currency');
+        const successMethod = document.getElementById('success-method');
+        
+        function updatePrices() {
+            const selectedOption = currencySelector.options[currencySelector.selectedIndex];
+            const rate = parseFloat(selectedOption.dataset.rate);
+            const symbol = selectedOption.dataset.symbol;
+            const code = selectedOption.value;
+            
+            priceItems.forEach(item => {
+                const baseAmount = parseFloat(item.dataset.amount);
+                const convertedAmount = (baseAmount * rate).toFixed(2);
+                item.textContent = `${symbol}${convertedAmount}`;
+            });
+            
+            const baseTotal = parseFloat(totalPrice.dataset.amount);
+            const convertedTotal = (baseTotal * rate).toFixed(2);
+            totalPrice.textContent = `${symbol}${convertedTotal}`;
+            payButtonAmount.textContent = `${symbol}${convertedTotal}`;
+            
+            // Update success modal
+            successAmount.textContent = `${symbol}${convertedTotal}`;
+            successCurrency.textContent = code;
+            
+            // Update installment amounts
+            updateInstallmentAmounts();
+        }
+        
+        currencySelector.addEventListener('change', updatePrices);
+        
+        // Installment slider functionality
+        const installmentSlider = document.getElementById('installment-slider');
+        const installmentMonths = document.getElementById('installment-months');
+        const installmentAmount = document.getElementById('installment-amount');
+        const installmentTotal = document.getElementById('installment-total');
+        
+        function updateInstallmentAmounts() {
+            const months = parseInt(installmentSlider.value);
+            const selectedOption = currencySelector.options[currencySelector.selectedIndex];
+            const rate = parseFloat(selectedOption.dataset.rate);
+            const symbol = selectedOption.dataset.symbol;
+            
+            const baseTotal = parseFloat(totalPrice.dataset.amount);
+            const convertedTotal = (baseTotal * rate).toFixed(2);
+            const monthlyPayment = (convertedTotal / months).toFixed(2);
+            
+            installmentMonths.textContent = `${months} monthly payments`;
+            installmentAmount.textContent = `${symbol}${monthlyPayment}`;
+            installmentTotal.textContent = `${symbol}${convertedTotal}`;
+        }
+        
+        installmentSlider.addEventListener('input', updateInstallmentAmounts);
+        
+        // Payment buttons
+        const payButton = document.getElementById('pay-button');
+        const installmentButton = document.getElementById('installment-button');
+        const bankButton = document.getElementById('bank-button');
+        const successModal = document.getElementById('success-modal');
+        const closeModal = document.getElementById('close-modal');
+        
+        payButton.addEventListener('click', function() {
+            successMethod.textContent = cardTypeDisplay.textContent;
+            successModal.classList.remove('hidden');
+        });
+        
+        installmentButton.addEventListener('click', function() {
+            const provider = document.querySelector('input[name="installment-provider"]:checked').value;
+            const months = installmentSlider.value;
+            successMethod.textContent = `Installments (${provider}, ${months} months)`;
+            successModal.classList.remove('hidden');
+        });
+        
+        bankButton.addEventListener('click', function() {
+            successMethod.textContent = 'Bank Transfer';
+            successModal.classList.remove('hidden');
+        });
+        
+        closeModal.addEventListener('click', function() {
+            successModal.classList.add('hidden');
+        });
+        
+        // Mobile wallet radio buttons
+        const walletRadios = document.querySelectorAll('input[name="wallet-type"]');
+        walletRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    document.querySelectorAll('label[for^="apple-pay"], label[for^="google-pay"], label[for^="samsung-pay"]').forEach(label => {
+                        const radioInput = document.getElementById(label.getAttribute('for'));
+                        const radioDiv = label.querySelector('div:first-child');
+                        if (radioInput.checked) {
+                            radioDiv.querySelector('div').classList.remove('opacity-0');
+                        } else {
+                            radioDiv.querySelector('div').classList.add('opacity-0');
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Installment provider radio buttons
+        const installmentRadios = document.querySelectorAll('input[name="installment-provider"]');
+        installmentRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    document.querySelectorAll('label[for^="klarna"], label[for^="affirm"], label[for^="afterpay"]').forEach(label => {
+                        const radioInput = document.getElementById(label.getAttribute('for'));
+                        const radioDiv = label.querySelector('div:first-child');
+                        if (radioInput.checked) {
+                            radioDiv.querySelector('div').classList.remove('opacity-0');
+                        } else {
+                            radioDiv.querySelector('div').classList.add('opacity-0');
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Card type radio buttons
+        creditCardRadio.addEventListener('change', function() {
+            if (this.checked) {
+                document.querySelector('label[for="credit-card"] div:first-child div').classList.remove('opacity-0');
+                document.querySelector('label[for="debit-card"] div:first-child div').classList.add('opacity-0');
+            }
+        });
+        
+        debitCardRadio.addEventListener('change', function() {
+            if (this.checked) {
+                document.querySelector('label[for="debit-card"] div:first-child div').classList.remove('opacity-0');
+                document.querySelector('label[for="credit-card"] div:first-child div').classList.add('opacity-0');
+            }
+        });
+        
+        // Initialize
+        updatePrices();
+        updateInstallmentAmounts();
+    </script>
+</body>
+</html>
