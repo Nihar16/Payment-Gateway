@@ -790,6 +790,20 @@
         const expiryDisplay = document.getElementById('expiry-display');
         const cvvDisplay = document.getElementById('cvv-display');
         const cardBrand = document.getElementById('card-brand');
+        let cvvLength = 3;
+
+        function updateCvvSettings() {
+            if (cardBrand.textContent === 'AMEX') {
+                cvvLength = 4;
+            } else {
+                cvvLength = 3;
+            }
+            cvvInput.maxLength = cvvLength;
+            cvvInput.placeholder = cvvLength === 4 ? '1234' : '123';
+            const value = cvvInput.value.slice(0, cvvLength).replace(/\D/g, '');
+            cvvInput.value = value;
+            cvvDisplay.textContent = value || '•'.repeat(cvvLength);
+        }
         const cardTypeDisplay = document.getElementById('card-type-display');
         
         // Card type selection
@@ -837,6 +851,7 @@
             } else {
                 cardBrand.textContent = 'CARD';
             }
+            updateCvvSettings();
         });
         
         // Format expiry date
@@ -866,9 +881,9 @@
         });
         
         cvvInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
+            let value = e.target.value.replace(/\D/g, '').slice(0, cvvLength);
             e.target.value = value;
-            cvvDisplay.textContent = value || '•••';
+            cvvDisplay.textContent = value || '•'.repeat(cvvLength);
         });
         
         // Tab switching
@@ -1091,6 +1106,7 @@
         // Initialize
         updatePrices();
         updateInstallmentAmounts();
+        updateCvvSettings();
     </script>
 </body>
 </html>
