@@ -442,7 +442,7 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">CVV</label>
-                            <input type="text" id="cvv" placeholder="123" maxlength="3" class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
+                            <input type="password" id="cvv" placeholder="123" maxlength="3" class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
                         </div>
                     </div>
                 </div>
@@ -791,6 +791,7 @@
         const cvvDisplay = document.getElementById('cvv-display');
         const cardBrand = document.getElementById('card-brand');
         let cvvLength = 3;
+        let cvvMaskTimer;
 
         function updateCvvSettings() {
             if (cardBrand.textContent === 'AMEX') {
@@ -802,7 +803,13 @@
             cvvInput.placeholder = cvvLength === 4 ? '1234' : '123';
             const value = cvvInput.value.slice(0, cvvLength).replace(/\D/g, '');
             cvvInput.value = value;
-            cvvDisplay.textContent = value || '•'.repeat(cvvLength);
+            maskCvv();
+        }
+
+        function maskCvv() {
+            cvvInput.type = 'password';
+            const len = cvvInput.value.length;
+            cvvDisplay.textContent = len ? '•'.repeat(len) : '•'.repeat(cvvLength);
         }
         const cardTypeDisplay = document.getElementById('card-type-display');
         
@@ -883,8 +890,13 @@
         cvvInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '').slice(0, cvvLength);
             e.target.value = value;
+            cvvInput.type = 'text';
             cvvDisplay.textContent = value || '•'.repeat(cvvLength);
+            clearTimeout(cvvMaskTimer);
+            cvvMaskTimer = setTimeout(maskCvv, 1000);
         });
+
+        cvvInput.addEventListener('blur', maskCvv);
         
         // Tab switching
         const tabCard = document.getElementById('tab-card');
