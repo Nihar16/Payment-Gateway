@@ -4,7 +4,7 @@
   <img src="https://socialify.git.ci/Nihar16/Payment-Gateway/image?font=Rokkitt&name=1&pattern=Circuit+Board&theme=Auto" alt="Payment-Gateway" width="640" height="320" />
 </p>
 
-A secure and scalable payment processing solution designed to handle online transactions efficiently. This payment gateway enables merchants to process payments, manage transactions, and integrate with multiple payment providers.
+A secure and scalable payment processing solution designed to handle online transactions efficiently. This payment gateway enables merchants to process payments, manage transactions, and integrate with multiple payment providers. Supporting 13 global currencies for now and many more to come.
 
 ## 🚀 Features
 
