@@ -342,6 +342,7 @@
                     <button id="tab-wallet" class="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Mobile Wallets</button>
                     <button id="tab-installment" class="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Installments</button>
                     <button id="tab-paypal" class="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">PayPal</button>
+                    <button id="tab-crypto" class="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Crypto</button>
                     <button id="tab-bank" class="whitespace-nowrap px-4 py-2 text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Bank Transfer</button>
                 </div>
                 
@@ -429,6 +430,11 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Cardholder Name</label>
                             <input type="text" id="name" placeholder="Name on card" class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
                         </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Tenant ID</label>
+                            <input type="text" id="tenant-id" placeholder="tenant-001" class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
+                        </div>
                         
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Card Number</label>
@@ -442,7 +448,7 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">CVV</label>
-                            <input type="text" id="cvv" placeholder="123" maxlength="4" class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
+                            <input type="password" id="cvv" placeholder="123" maxlength="3" class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
                         </div>
                     </div>
                 </div>
@@ -636,6 +642,20 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Crypto Form -->
+                <div id="form-crypto" class="hidden space-y-6">
+                    <div class="bg-gray-50 dark:bg-dark-400 p-6 rounded-lg text-center dark-mode-transition">
+                        <p class="text-base text-gray-600 dark:text-dark-800 mb-4 dark-mode-transition">Select cryptocurrency</p>
+                        <select id="crypto-currency" class="w-full p-3 border border-gray-300 dark:border-dark-600 rounded-md">
+                            <option value="BTC">Bitcoin</option>
+                            <option value="ETH">Ethereum</option>
+                        </select>
+                        <button id="crypto-button" class="w-full mt-4 bg-indigo-600 dark:bg-indigo-700 text-white px-6 py-3 rounded-md font-medium hover:bg-indigo-700 dark:hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Pay with Crypto
+                        </button>
+                    </div>
+                </div>
                 
                 <!-- Bank Transfer Form -->
                 <div id="form-bank" class="hidden space-y-6">
@@ -725,6 +745,10 @@
                     <span id="success-currency" class="font-medium dark:text-white dark-mode-transition">USD</span>
                 </div>
                 <div class="flex justify-between text-base mb-2">
+                    <span class="text-gray-600 dark:text-dark-800 dark-mode-transition">Tenant:</span>
+                    <span id="success-tenant" class="font-medium dark:text-white dark-mode-transition"></span>
+                </div>
+                <div class="flex justify-between text-base mb-2">
                     <span class="text-gray-600 dark:text-dark-800 dark-mode-transition">Payment Method:</span>
                     <span id="success-method" class="font-medium dark:text-white dark-mode-transition">Credit Card</span>
                 </div>
@@ -790,6 +814,27 @@
         const expiryDisplay = document.getElementById('expiry-display');
         const cvvDisplay = document.getElementById('cvv-display');
         const cardBrand = document.getElementById('card-brand');
+        let cvvLength = 3;
+        let cvvMaskTimer;
+
+        function updateCvvSettings() {
+            if (cardBrand.textContent === 'AMEX') {
+                cvvLength = 4;
+            } else {
+                cvvLength = 3;
+            }
+            cvvInput.maxLength = cvvLength;
+            cvvInput.placeholder = cvvLength === 4 ? '1234' : '123';
+            const value = cvvInput.value.slice(0, cvvLength).replace(/\D/g, '');
+            cvvInput.value = value;
+            maskCvv();
+        }
+
+        function maskCvv() {
+            cvvInput.type = 'password';
+            const len = cvvInput.value.length;
+            cvvDisplay.textContent = len ? '•'.repeat(len) : '•'.repeat(cvvLength);
+        }
         const cardTypeDisplay = document.getElementById('card-type-display');
         
         // Card type selection
@@ -837,6 +882,7 @@
             } else {
                 cardBrand.textContent = 'CARD';
             }
+            updateCvvSettings();
         });
         
         // Format expiry date
@@ -866,22 +912,29 @@
         });
         
         cvvInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
+            let value = e.target.value.replace(/\D/g, '').slice(0, cvvLength);
             e.target.value = value;
-            cvvDisplay.textContent = value || '•••';
+            cvvInput.type = 'text';
+            cvvDisplay.textContent = value || '•'.repeat(cvvLength);
+            clearTimeout(cvvMaskTimer);
+            cvvMaskTimer = setTimeout(maskCvv, 1000);
         });
+
+        cvvInput.addEventListener('blur', maskCvv);
         
         // Tab switching
         const tabCard = document.getElementById('tab-card');
         const tabWallet = document.getElementById('tab-wallet');
         const tabInstallment = document.getElementById('tab-installment');
         const tabPaypal = document.getElementById('tab-paypal');
+        const tabCrypto = document.getElementById('tab-crypto');
         const tabBank = document.getElementById('tab-bank');
         
         const formCard = document.getElementById('form-card');
         const formWallet = document.getElementById('form-wallet');
         const formInstallment = document.getElementById('form-installment');
         const formPaypal = document.getElementById('form-paypal');
+        const formCrypto = document.getElementById('form-crypto');
         const formBank = document.getElementById('form-bank');
         
         const cardPaymentButton = document.getElementById('card-payment-button');
@@ -892,6 +945,7 @@
             formWallet.classList.add('hidden');
             formInstallment.classList.add('hidden');
             formPaypal.classList.add('hidden');
+            formCrypto.classList.add('hidden');
             formBank.classList.add('hidden');
             
             // Reset all tab styles
@@ -906,7 +960,10 @@
             
             tabPaypal.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
             tabPaypal.classList.add('text-gray-500', 'dark:text-dark-800');
-            
+
+            tabCrypto.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
+            tabCrypto.classList.add('text-gray-500', 'dark:text-dark-800');
+
             tabBank.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
             tabBank.classList.add('text-gray-500', 'dark:text-dark-800');
             
@@ -942,7 +999,14 @@
             tabPaypal.classList.add('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
             tabPaypal.classList.remove('text-gray-500', 'dark:text-dark-800');
         });
-        
+
+        tabCrypto.addEventListener('click', function() {
+            resetTabs();
+            formCrypto.classList.remove('hidden');
+            tabCrypto.classList.add('text-indigo-600', 'dark:text-indigo-400', 'border-b-2', 'border-indigo-600', 'dark:border-indigo-400');
+            tabCrypto.classList.remove('text-gray-500', 'dark:text-dark-800');
+        });
+
         tabBank.addEventListener('click', function() {
             resetTabs();
             formBank.classList.remove('hidden');
@@ -958,6 +1022,7 @@
         const successAmount = document.getElementById('success-amount');
         const successCurrency = document.getElementById('success-currency');
         const successMethod = document.getElementById('success-method');
+        const successTenant = document.getElementById('success-tenant');
         
         function updatePrices() {
             const selectedOption = currencySelector.options[currencySelector.selectedIndex];
@@ -1008,16 +1073,42 @@
         }
         
         installmentSlider.addEventListener('input', updateInstallmentAmounts);
+
+        function detectFraud(amount) {
+            if (amount > 10000) {
+                alert('Potential fraud detected.');
+                return true;
+            }
+            return false;
+        }
+
+        function connectTransactionStream() {
+            const ws = new WebSocket('wss://example.com/transactions');
+            ws.onmessage = e => console.log('Transaction update', e.data);
+        }
+
+        function queryGraphQL(query, variables) {
+            return fetch('/graphql', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query, variables })
+            }).then(res => res.json());
+        }
         
         // Payment buttons
         const payButton = document.getElementById('pay-button');
         const installmentButton = document.getElementById('installment-button');
         const bankButton = document.getElementById('bank-button');
+        const cryptoButton = document.getElementById('crypto-button');
         const successModal = document.getElementById('success-modal');
         const closeModal = document.getElementById('close-modal');
+        const tenantInput = document.getElementById('tenant-id');
         
         payButton.addEventListener('click', function() {
+            const amount = parseFloat(totalPrice.dataset.amount);
+            detectFraud(amount);
             successMethod.textContent = cardTypeDisplay.textContent;
+            successTenant.textContent = tenantInput.value;
             successModal.classList.remove('hidden');
         });
         
@@ -1025,11 +1116,20 @@
             const provider = document.querySelector('input[name="installment-provider"]:checked').value;
             const months = installmentSlider.value;
             successMethod.textContent = `Installments (${provider}, ${months} months)`;
+            successTenant.textContent = tenantInput.value;
             successModal.classList.remove('hidden');
         });
         
         bankButton.addEventListener('click', function() {
             successMethod.textContent = 'Bank Transfer';
+            successTenant.textContent = tenantInput.value;
+            successModal.classList.remove('hidden');
+        });
+
+        cryptoButton.addEventListener('click', function() {
+            const cc = document.getElementById('crypto-currency').value;
+            successMethod.textContent = `Crypto (${cc})`;
+            successTenant.textContent = tenantInput.value;
             successModal.classList.remove('hidden');
         });
         
@@ -1091,6 +1191,8 @@
         // Initialize
         updatePrices();
         updateInstallmentAmounts();
+        updateCvvSettings();
+        connectTransactionStream();
     </script>
 </body>
 </html>
