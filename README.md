@@ -317,8 +317,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ### Version History
 
-- **v1.0.0** - Initial release with core payment processing
-- **v1.1.0** - Added webhook support and enhanced security
-- **v1.2.0** - Multi-currency support and improved API
+- **v1.0** - Initial release with core payment processing.
+- **v1.1** - Multi-currency support.
 
 **⚠️ Important**: This is a payment processing system. Always ensure compliance with local regulations and PCI DSS requirements when handling payment data.
