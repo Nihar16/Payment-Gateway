@@ -227,11 +227,11 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-dark-200 min-h-screen flex items-center justify-center p-4 md:p-8 dark-mode-transition">
-    <div class="max-w-6xl w-full bg-white dark:bg-dark-100 rounded-xl shadow-lg overflow-hidden dark-mode-transition">
+<body class="bg-gray-100 dark:bg-dark-200 min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 dark-mode-transition">
+    <div class="max-w-6xl mx-auto w-full bg-white dark:bg-dark-100 rounded-xl shadow-lg overflow-hidden dark-mode-transition">
         
         <!-- Header -->
-        <div class="bg-indigo-600 dark:bg-indigo-800 p-6 text-white flex justify-between items-center dark-mode-transition">
+        <div class="bg-indigo-600 dark:bg-indigo-800 p-4 sm:p-6 text-white flex flex-col sm:flex-row justify-between items-center gap-4 dark-mode-transition">
             <div>
                 <h1 class="text-xl md:text-2xl font-semibold">Global Payment Gateway</h1>
                 <p class="text-indigo-100 text-sm md:text-base mt-1">Complete your purchase with worldwide currency support</p>
@@ -348,7 +348,7 @@
                 <!-- Credit/Debit Card Form -->
                 <div id="form-card" class="space-y-6">
                     <!-- Card Type Selection -->
-                    <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         <div>
                             <input type="radio" id="credit-card" name="card-type" value="credit" class="radio-card hidden" checked>
                             <label for="credit-card" class="flex items-center p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
@@ -442,14 +442,14 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">CVV</label>
-                            <input type="text" id="cvv" placeholder="123" maxlength="4" class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
+                            <input type="password" id="cvv" placeholder="123" maxlength="3" class="w-full px-4 py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark-mode-transition">
                         </div>
                     </div>
                 </div>
                 
                 <!-- Mobile Wallets Form -->
                 <div id="form-wallet" class="hidden space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         <!-- Apple Pay -->
                         <div>
                             <input type="radio" id="apple-pay" name="wallet-type" value="apple" class="radio-card hidden" checked>
@@ -551,7 +551,7 @@
                     <div class="space-y-4">
                         <h3 class="text-base font-medium text-gray-900 dark:text-white dark-mode-transition">Select payment provider</h3>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             <!-- Klarna -->
                             <div>
                                 <input type="radio" id="klarna" name="installment-provider" value="klarna" class="radio-card hidden" checked>
@@ -643,24 +643,24 @@
                         <h3 class="font-medium text-gray-900 dark:text-white mb-4 text-lg dark-mode-transition">Bank Transfer Details</h3>
                         <div class="space-y-4 text-sm text-gray-600 dark:text-dark-800 dark-mode-transition">
                             <p>Please transfer the total amount to the following bank account:</p>
-                            <div class="grid grid-cols-3 gap-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                 <span class="font-medium">Bank Name:</span>
-                                <span class="col-span-2">Global Bank</span>
+                                <span class="sm:col-span-2">Global Bank</span>
                                 
                                 <span class="font-medium">Account Name:</span>
-                                <span class="col-span-2">Demo Company Ltd</span>
+                                <span class="sm:col-span-2">Demo Company Ltd</span>
                                 
                                 <span class="font-medium">Account Number:</span>
-                                <span class="col-span-2">1234567890</span>
+                                <span class="sm:col-span-2">1234567890</span>
                                 
                                 <span class="font-medium">Sort Code:</span>
-                                <span class="col-span-2">12-34-56</span>
+                                <span class="sm:col-span-2">12-34-56</span>
                                 
                                 <span class="font-medium">IBAN:</span>
-                                <span class="col-span-2">GB29NWBK60161331926819</span>
+                                <span class="sm:col-span-2">GB29NWBK60161331926819</span>
                                 
                                 <span class="font-medium">Reference:</span>
-                                <span class="col-span-2">ORDER-12345</span>
+                                <span class="sm:col-span-2">ORDER-12345</span>
                             </div>
                             
                             <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-md mt-4 dark-mode-transition">
@@ -790,6 +790,27 @@
         const expiryDisplay = document.getElementById('expiry-display');
         const cvvDisplay = document.getElementById('cvv-display');
         const cardBrand = document.getElementById('card-brand');
+        let cvvLength = 3;
+        let cvvMaskTimer;
+
+        function updateCvvSettings() {
+            if (cardBrand.textContent === 'AMEX') {
+                cvvLength = 4;
+            } else {
+                cvvLength = 3;
+            }
+            cvvInput.maxLength = cvvLength;
+            cvvInput.placeholder = cvvLength === 4 ? '1234' : '123';
+            const value = cvvInput.value.slice(0, cvvLength).replace(/\D/g, '');
+            cvvInput.value = value;
+            maskCvv();
+        }
+
+        function maskCvv() {
+            cvvInput.type = 'password';
+            const len = cvvInput.value.length;
+            cvvDisplay.textContent = len ? '•'.repeat(len) : '•'.repeat(cvvLength);
+        }
         const cardTypeDisplay = document.getElementById('card-type-display');
         
         // Card type selection
@@ -837,6 +858,7 @@
             } else {
                 cardBrand.textContent = 'CARD';
             }
+            updateCvvSettings();
         });
         
         // Format expiry date
@@ -866,10 +888,15 @@
         });
         
         cvvInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
+            let value = e.target.value.replace(/\D/g, '').slice(0, cvvLength);
             e.target.value = value;
-            cvvDisplay.textContent = value || '•••';
+            cvvInput.type = 'text';
+            cvvDisplay.textContent = value || '•'.repeat(cvvLength);
+            clearTimeout(cvvMaskTimer);
+            cvvMaskTimer = setTimeout(maskCvv, 1000);
         });
+
+        cvvInput.addEventListener('blur', maskCvv);
         
         // Tab switching
         const tabCard = document.getElementById('tab-card');
@@ -1091,6 +1118,7 @@
         // Initialize
         updatePrices();
         updateInstallmentAmounts();
+        updateCvvSettings();
     </script>
 </body>
 </html>
