@@ -314,8 +314,9 @@ This project is licensed under the [MIT License](LICENSE).
 
 ### Version History
 
-- **v1.0** - Initial release with core payment processing.
-- **v1.1** - Multi-currency support.
+- **V1.0** - Initial release with core payment processing.
+- **V1.1** - Multi-currency support.
+- **V1.2** - Optimized for mobile phones and Tablets
 
 **⚠️ Important**: This is a payment processing system. Always ensure compliance with local regulations and PCI DSS requirements when handling payment data.
 
