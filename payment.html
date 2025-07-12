@@ -221,6 +221,18 @@
             cursor: pointer;
             border: none;
         }
+
+        .blur-bg {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 0.75rem;
+            padding: 1rem;
+        }
+
+        .dark .blur-bg {
+            background: rgba(30, 41, 59, 0.4);
+        }
         
         .dark .installment-slider::-moz-range-thumb {
             background: #6366F1;
@@ -736,6 +748,25 @@
             <button id="close-modal" class="w-full mt-6 bg-indigo-600 dark:bg-indigo-700 text-white px-4 py-3 rounded-md font-medium hover:bg-indigo-700 dark:hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark-mode-transition">
                 Close
             </button>
+        </div>
+    </div>
+
+    <!-- GitHub Showcase -->
+    <div class="mt-12">
+        <h2 class="text-center text-2xl font-semibold mb-6 dark:text-white">GitHub Stats</h2>
+        <div class="flex justify-center">
+            <div class="blur-bg">
+                <img src="https://github-readme-stats.vercel.app/api?username=Nihar16&show_icons=true&theme=github_dark&hide_border=true&bg_color=00000000" alt="GitHub Stats" />
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8">
+        <h2 class="text-center text-2xl font-semibold mb-6 dark:text-white">Pinned Projects</h2>
+        <div class="flex justify-center">
+            <div class="blur-bg">
+                <img src="https://github-readme-stats.vercel.app/api/pin/?username=Nihar16&repo=Payment-Gateway&theme=github_dark&hide_border=true&bg_color=00000000" alt="Payment-Gateway" />
+            </div>
         </div>
     </div>
 
