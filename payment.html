@@ -86,6 +86,20 @@
             --gold-light: #F5C000;
             --gold-dark: #B8860B;
             --gold-glow: rgba(212, 160, 23, 0.25);
+            --surface-light: #FFFFFF;
+            --surface-dark: #050505;
+            --text-light: #111111;
+            --text-dark: #F5C000;
+        }
+
+        html:not(.dark) body {
+            background: var(--surface-light);
+            color: var(--text-light);
+        }
+
+        .dark body {
+            background: #000000;
+            color: var(--text-dark);
         }
 
         /* ── Dark mode transition ── */
@@ -281,7 +295,7 @@
         .theme-btn {
             background: rgba(212, 160, 23, 0.15);
             border: 1px solid rgba(212, 160, 23, 0.3);
-            color: var(--gold-light);
+            color: var(--gold-dark);
             border-radius: 8px;
             padding: 6px 10px;
             font-size: 12px;
@@ -289,6 +303,10 @@
             cursor: pointer;
             transition: all 0.2s;
             white-space: nowrap;
+        }
+
+        .dark .theme-btn {
+            color: var(--gold-light);
         }
 
         .theme-btn:hover {
@@ -344,13 +362,33 @@
             .two-col-form {
                 grid-template-columns: 1fr !important;
             }
+
+            #theme-controls {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .payment-shell {
+                border-radius: 14px;
+            }
+
+            .payment-main {
+                gap: 0;
+            }
+
+            .bank-details-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body
-    class="bg-gray-50 dark:bg-dark-200 min-h-screen flex items-center justify-center p-3 sm:p-4 md:p-8 dark-mode-transition">
-    <div class="max-w-6xl w-full bg-white dark:bg-dark-100 rounded-xl shadow-xl overflow-hidden dark-mode-transition"
+    class="bg-white dark:bg-black min-h-screen flex items-center justify-center p-3 sm:p-4 md:p-8 dark-mode-transition">
+    <div class="payment-shell max-w-6xl w-full bg-white dark:bg-black rounded-xl shadow-xl overflow-hidden dark-mode-transition"
         style="border: 1px solid rgba(212,160,23,0.15);">
 
         <!-- Header -->
@@ -371,7 +409,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col md:flex-row">
+        <div class="payment-main flex flex-col md:flex-row">
             <!-- Left Column - Order Summary -->
             <div class="md:w-1/3 border-b md:border-b-0 md:border-r dark-mode-transition"
                 style="border-color: rgba(212,160,23,0.2)">
@@ -914,23 +952,104 @@
                         style="background:rgba(212,160,23,0.05);border:1px solid rgba(212,160,23,0.15)">
                         <h3 class="font-semibold mb-4 text-sm sm:text-base dark-mode-transition"
                             style="color:var(--gold)">Bank Transfer Details</h3>
-                        <div class="space-y-3 text-xs sm:text-sm text-gray-600 dark:text-dark-800 dark-mode-transition">
-                            <p>Please transfer the total amount to the following bank account:</p>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2">
-                                <span class="font-semibold text-gray-800 dark:text-gray-200">Bank Name:</span>
-                                <span class="sm:col-span-2 pl-2 sm:pl-0 mb-1 sm:mb-0">Global Bank</span>
-                                <span class="font-semibold text-gray-800 dark:text-gray-200">Account Name:</span>
-                                <span class="sm:col-span-2 pl-2 sm:pl-0 mb-1 sm:mb-0">Demo Company Ltd</span>
-                                <span class="font-semibold text-gray-800 dark:text-gray-200">Account Number:</span>
-                                <span class="sm:col-span-2 pl-2 sm:pl-0 mb-1 sm:mb-0">1234567890</span>
-                                <span class="font-semibold text-gray-800 dark:text-gray-200">Sort Code:</span>
-                                <span class="sm:col-span-2 pl-2 sm:pl-0 mb-1 sm:mb-0">12-34-56</span>
-                                <span class="font-semibold text-gray-800 dark:text-gray-200">IBAN:</span>
-                                <span
-                                    class="sm:col-span-2 pl-2 sm:pl-0 mb-1 sm:mb-0 break-all">GB29NWBK60161331926819</span>
-                                <span class="font-semibold text-gray-800 dark:text-gray-200">Reference:</span>
-                                <span class="sm:col-span-2 pl-2 sm:pl-0">ORDER-12345</span>
+                        <div class="space-y-4 text-xs sm:text-sm text-gray-600 dark:text-dark-800 dark-mode-transition">
+                            <p>Use the beneficiary account below and submit your sender bank details for transfer reconciliation.</p>
+
+                            <div class="p-3 sm:p-4 rounded-md dark-mode-transition"
+                                style="background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2)">
+                                <h4 class="font-semibold mb-2 text-gray-800 dark:text-gray-100">Beneficiary Account (Payment Gateway)</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2 bank-grid">
+                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Bank Name:</span>
+                                    <span class="sm:col-span-2">Global Settlement Bank</span>
+                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Beneficiary:</span>
+                                    <span class="sm:col-span-2">Demo Company Ltd</span>
+                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Account Number:</span>
+                                    <span class="sm:col-span-2 break-all">001234567890</span>
+                                    <span class="font-semibold text-gray-800 dark:text-gray-200">IBAN:</span>
+                                    <span class="sm:col-span-2 break-all">GB29NWBK60161331926819</span>
+                                    <span class="font-semibold text-gray-800 dark:text-gray-200">SWIFT/BIC:</span>
+                                    <span class="sm:col-span-2">NWBKGB2L</span>
+                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Reference:</span>
+                                    <span class="sm:col-span-2">ORDER-12345</span>
+                                </div>
                             </div>
+
+                            <form id="bank-transfer-form" class="space-y-4" novalidate>
+                                <h4 class="font-semibold text-gray-800 dark:text-gray-100">Your Bank Details (Sender)</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 two-col-form bank-details-grid">
+                                    <div>
+                                        <label for="sender-name"
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Account Holder Name</label>
+                                        <input id="sender-name" type="text" required autocomplete="name"
+                                            placeholder="Full legal account holder name"
+                                            class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
+                                    </div>
+                                    <div>
+                                        <label for="sender-country"
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Bank Country/Region</label>
+                                        <select id="sender-country" required
+                                            class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
+                                            <option value="">Select country/region</option>
+                                            <option value="US">United States</option>
+                                            <option value="UK">United Kingdom</option>
+                                            <option value="EU">European Union/EEA</option>
+                                            <option value="CA">Canada</option>
+                                            <option value="AU">Australia</option>
+                                            <option value="IN">India</option>
+                                            <option value="MX">Mexico</option>
+                                            <option value="OTHER">Other</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="sender-bank-name"
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Your Bank Name</label>
+                                        <input id="sender-bank-name" type="text" required autocomplete="organization"
+                                            placeholder="e.g., HSBC, Chase, SBI"
+                                            class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
+                                    </div>
+                                    <div>
+                                        <label for="sender-account-number"
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Account Number</label>
+                                        <input id="sender-account-number" type="text" required inputmode="numeric"
+                                            placeholder="Account number"
+                                            class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
+                                    </div>
+                                    <div>
+                                        <label for="routing-code-type"
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Local Clearing Code Type</label>
+                                        <select id="routing-code-type" required
+                                            class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
+                                            <option value="">Choose code type</option>
+                                            <option value="ABA">ABA/Routing Number (US)</option>
+                                            <option value="SORT">Sort Code (UK)</option>
+                                            <option value="IFSC">IFSC (India)</option>
+                                            <option value="BSB">BSB (Australia)</option>
+                                            <option value="CLABE">CLABE (Mexico)</option>
+                                            <option value="TRANSIT">Transit + Institution (Canada)</option>
+                                            <option value="NCC">National Clearing Code (Other)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="routing-code-value"
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Local Clearing Code</label>
+                                        <input id="routing-code-value" type="text" required
+                                            placeholder="e.g., 021000021 or 12-34-56"
+                                            class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
+                                    </div>
+                                    <div>
+                                        <label for="sender-iban"
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">IBAN (if applicable)</label>
+                                        <input id="sender-iban" type="text" placeholder="Optional for non-IBAN countries"
+                                            class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
+                                    </div>
+                                    <div>
+                                        <label for="sender-swift"
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">SWIFT/BIC</label>
+                                        <input id="sender-swift" type="text" required placeholder="8 or 11 characters"
+                                            class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
+                                    </div>
+                                </div>
+                            </form>
                             <div class="p-3 sm:p-4 rounded-md mt-3 sm:mt-4 dark-mode-transition"
                                 style="background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2)">
                                 <div class="flex">
@@ -941,8 +1060,7 @@
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <p class="ml-3 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
-                                        Please include your order reference in the payment description to help us
-                                        identify your payment.
+                                        Entering sender details improves global transfer matching (SWIFT, local clearing, and regional banking rails).
                                     </p>
                                 </div>
                             </div>
@@ -1030,10 +1148,18 @@
         const btnDark = document.getElementById('btn-dark');
 
         const osQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const THEME_KEY = 'theme';
 
-        function applyTheme(mode) {
+        function getStoredTheme() {
+            const storedTheme = localStorage.getItem(THEME_KEY);
+            return ['light', 'dark', 'auto'].includes(storedTheme) ? storedTheme : 'auto';
+        }
+
+        function applyTheme(mode, shouldPersist = true) {
             // mode: 'light' | 'dark' | 'auto'
-            localStorage.setItem('theme', mode);
+            if (shouldPersist) {
+                localStorage.setItem(THEME_KEY, mode);
+            }
 
             // Update button states
             [btnLight, btnAuto, btnDark].forEach(b => b.classList.remove('active'));
@@ -1044,10 +1170,11 @@
             // Apply class
             const isDark = mode === 'dark' || (mode === 'auto' && osQuery.matches);
             htmlEl.classList.toggle('dark', isDark);
+            htmlEl.classList.toggle('light', !isDark);
         }
 
         // Initial load
-        applyTheme(localStorage.getItem('theme') || 'auto');
+        applyTheme(getStoredTheme(), false);
 
         // Button click handlers
         btnLight.addEventListener('click', () => applyTheme('light'));
@@ -1055,9 +1182,14 @@
         btnDark.addEventListener('click', () => applyTheme('dark'));
 
         // React to OS preference changes when in Auto mode
-        osQuery.addEventListener('change', () => {
-            if ((localStorage.getItem('theme') || 'auto') === 'auto') applyTheme('auto');
-        });
+        function handleThemeChange() {
+            if (getStoredTheme() === 'auto') applyTheme('auto', false);
+        }
+        if (typeof osQuery.addEventListener === 'function') {
+            osQuery.addEventListener('change', handleThemeChange);
+        } else if (typeof osQuery.addListener === 'function') {
+            osQuery.addListener(handleThemeChange);
+        }
 
         // ── Card display functionality ────────────────────────────────────
         const cardContainer = document.querySelector('.card-container');
@@ -1284,6 +1416,11 @@
         const bankButton = document.getElementById('bank-button');
         const successModal = document.getElementById('success-modal');
         const closeModal = document.getElementById('close-modal');
+        const bankTransferForm = document.getElementById('bank-transfer-form');
+        const senderCountry = document.getElementById('sender-country');
+        const routingCodeType = document.getElementById('routing-code-type');
+        const senderIban = document.getElementById('sender-iban');
+        const senderSwift = document.getElementById('sender-swift');
 
         payButton.addEventListener('click', function () {
             successMethod.textContent = cardTypeDisplay.textContent;
@@ -1298,7 +1435,29 @@
         });
 
         bankButton.addEventListener('click', function () {
-            successMethod.textContent = 'Bank Transfer';
+            if (!bankTransferForm.reportValidity()) return;
+
+            const ibanValue = senderIban.value.trim().toUpperCase().replace(/\s+/g, '');
+            const swiftValue = senderSwift.value.trim().toUpperCase().replace(/\s+/g, '');
+            const swiftRegex = /^[A-Z0-9]{8}(?:[A-Z0-9]{3})?$/;
+
+            if (ibanValue && !/^[A-Z0-9]{15,34}$/.test(ibanValue)) {
+                senderIban.setCustomValidity('IBAN must be 15 to 34 alphanumeric characters.');
+                senderIban.reportValidity();
+                return;
+            }
+            senderIban.setCustomValidity('');
+
+            if (!swiftRegex.test(swiftValue)) {
+                senderSwift.setCustomValidity('SWIFT/BIC must be 8 or 11 alphanumeric characters.');
+                senderSwift.reportValidity();
+                return;
+            }
+            senderSwift.setCustomValidity('');
+
+            const countryLabel = senderCountry.options[senderCountry.selectedIndex].text;
+            const codeTypeLabel = routingCodeType.options[routingCodeType.selectedIndex].text;
+            successMethod.textContent = `Bank Transfer (${countryLabel}, ${codeTypeLabel})`;
             successModal.classList.remove('hidden');
         });
 
