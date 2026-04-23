@@ -4,9 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https://js.stripe.com https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.gstatic.com; script-src 'self' https://js.stripe.com https://cdn.jsdelivr.net https://cdn.tailwindcss.com 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://api.stripe.com; frame-src https://js.stripe.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;">
     <title>Global Payment Gateway</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -248,6 +251,18 @@
             outline: none;
             border-color: var(--gold) !important;
             box-shadow: 0 0 0 3px var(--gold-glow);
+        }
+
+        .StripeElement {
+            background: transparent;
+            border: none;
+            padding: 0;
+            min-height: 44px;
+            width: 100%;
+        }
+
+        .StripeElement--focus {
+            outline: none;
         }
 
         /* ── Header gradient ── */
@@ -538,141 +553,149 @@
 
                 <!-- Credit/Debit Card Form -->
                 <div id="form-card" class="space-y-5 sm:space-y-6">
-                    <!-- Card Type Selection -->
-                    <div class="grid grid-cols-2 gap-3 sm:gap-4 mb-5 sm:mb-6">
-                        <div>
-                            <input type="radio" id="credit-card" name="card-type" value="credit"
-                                class="radio-card hidden" checked>
-                            <label for="credit-card"
-                                class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
-                                <div
-                                    class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 dark-mode-transition">
-                                    <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot"></div>
-                                </div>
-                                <div>
-                                    <span
-                                        class="block text-xs sm:text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Credit
-                                        Card</span>
-                                    <span
-                                        class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition hidden sm:block">Visa,
-                                        Mastercard, Amex, etc.</span>
-                                </div>
-                            </label>
+                    <form id="payment-form" class="space-y-5 sm:space-y-6" novalidate>
+                        <!-- Card Type Selection -->
+                        <div class="grid grid-cols-2 gap-3 sm:gap-4 mb-5 sm:mb-6">
+                            <div>
+                                <input type="radio" id="credit-card" name="card-type" value="credit"
+                                    class="radio-card hidden" checked>
+                                <label for="credit-card"
+                                    class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
+                                    <div
+                                        class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 dark-mode-transition">
+                                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot"></div>
+                                    </div>
+                                    <div>
+                                        <span
+                                            class="block text-xs sm:text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Credit
+                                            Card</span>
+                                        <span
+                                            class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition hidden sm:block">Visa,
+                                            Mastercard, Amex, etc.</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" id="debit-card" name="card-type" value="debit"
+                                    class="radio-card hidden">
+                                <label for="debit-card"
+                                    class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
+                                    <div
+                                        class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 dark-mode-transition">
+                                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot opacity-0"></div>
+                                    </div>
+                                    <div>
+                                        <span
+                                            class="block text-xs sm:text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Debit
+                                            Card</span>
+                                        <span
+                                            class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition hidden sm:block">Visa
+                                            Debit, Maestro, etc.</span>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
-                        <div>
-                            <input type="radio" id="debit-card" name="card-type" value="debit"
-                                class="radio-card hidden">
-                            <label for="debit-card"
-                                class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
-                                <div
-                                    class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 dark-mode-transition">
-                                    <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot opacity-0"></div>
-                                </div>
-                                <div>
-                                    <span
-                                        class="block text-xs sm:text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Debit
-                                        Card</span>
-                                    <span
-                                        class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition hidden sm:block">Visa
-                                        Debit, Maestro, etc.</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
 
-                    <!-- Card Display -->
-                    <div
-                        class="card-container h-44 sm:h-52 md:h-56 mb-5 sm:mb-6 relative max-w-xs sm:max-w-sm md:max-w-lg mx-auto">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <div
-                                    class="card-visual-front relative rounded-xl p-4 sm:p-5 md:p-6 h-full flex flex-col justify-between text-white shadow-lg dark-mode-transition overflow-hidden">
-                                    <div class="flex justify-between items-start">
-                                        <div class="text-xs uppercase tracking-wider"
-                                            style="color:rgba(212,160,23,0.7)">
-                                            <span id="card-type-display">Credit Card</span>
+                        <!-- Card Display -->
+                        <div
+                            class="card-container h-44 sm:h-52 md:h-56 mb-5 sm:mb-6 relative max-w-xs sm:max-w-sm md:max-w-lg mx-auto">
+                            <div class="card-inner">
+                                <div class="card-front">
+                                    <div
+                                        class="card-visual-front relative rounded-xl p-4 sm:p-5 md:p-6 h-full flex flex-col justify-between text-white shadow-lg dark-mode-transition overflow-hidden">
+                                        <div class="flex justify-between items-start">
+                                            <div class="text-xs uppercase tracking-wider"
+                                                style="color:rgba(212,160,23,0.7)">
+                                                <span id="card-type-display">Credit Card</span>
+                                            </div>
+                                            <div id="card-brand" class="text-xs sm:text-sm font-bold tracking-widest"
+                                                style="color:var(--gold-light)">VISA</div>
                                         </div>
-                                        <div id="card-brand" class="text-xs sm:text-sm font-bold tracking-widest"
-                                            style="color:var(--gold-light)">VISA</div>
+                                        <div class="my-3 sm:my-4">
+                                            <div class="w-10 h-8 sm:w-12 sm:h-10 mb-3 sm:mb-4">
+                                                <svg class="w-full h-full" viewBox="0 0 48 48" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M44 12H4C2.89543 12 2 12.8954 2 14V34C2 35.1046 2.89543 36 4 36H44C45.1046 36 46 35.1046 46 34V14C46 12.8954 45.1046 12 44 12Z"
+                                                        stroke="#D4A017" stroke-width="2" />
+                                                    <path d="M2 18H46" stroke="#D4A017" stroke-width="2" />
+                                                </svg>
+                                            </div>
+                                            <div id="card-number-display"
+                                                class="font-mono tracking-widest text-base sm:text-lg md:text-2xl"
+                                                style="color:var(--gold-light)">•••• •••• •••• ••••</div>
+                                        </div>
+                                        <div class="flex justify-between items-end">
+                                            <div>
+                                                <div class="text-xs" style="color:rgba(212,160,23,0.6)">Card Holder
+                                                </div>
+                                                <div id="name-display"
+                                                    class="font-medium mt-1 text-xs sm:text-sm md:text-base text-white">
+                                                    YOUR
+                                                    NAME</div>
+                                            </div>
+                                            <div>
+                                                <div class="text-xs" style="color:rgba(212,160,23,0.6)">Expires</div>
+                                                <div id="expiry-display"
+                                                    class="font-medium mt-1 text-xs sm:text-sm md:text-base text-white">
+                                                    MM/YY</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="my-3 sm:my-4">
-                                        <div class="w-10 h-8 sm:w-12 sm:h-10 mb-3 sm:mb-4">
-                                            <svg class="w-full h-full" viewBox="0 0 48 48" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M44 12H4C2.89543 12 2 12.8954 2 14V34C2 35.1046 2.89543 36 4 36H44C45.1046 36 46 35.1046 46 34V14C46 12.8954 45.1046 12 44 12Z"
-                                                    stroke="#D4A017" stroke-width="2" />
-                                                <path d="M2 18H46" stroke="#D4A017" stroke-width="2" />
-                                            </svg>
-                                        </div>
-                                        <div id="card-number-display"
-                                            class="font-mono tracking-widest text-base sm:text-lg md:text-2xl"
-                                            style="color:var(--gold-light)">•••• •••• •••• ••••</div>
-                                    </div>
-                                    <div class="flex justify-between items-end">
-                                        <div>
-                                            <div class="text-xs" style="color:rgba(212,160,23,0.6)">Card Holder</div>
-                                            <div id="name-display"
-                                                class="font-medium mt-1 text-xs sm:text-sm md:text-base text-white">YOUR
-                                                NAME</div>
-                                        </div>
-                                        <div>
-                                            <div class="text-xs" style="color:rgba(212,160,23,0.6)">Expires</div>
-                                            <div id="expiry-display"
-                                                class="font-medium mt-1 text-xs sm:text-sm md:text-base text-white">
-                                                MM/YY</div>
+                                </div>
+                                <div class="card-back">
+                                    <div
+                                        class="card-visual-back relative rounded-xl h-full flex flex-col text-white shadow-lg dark-mode-transition overflow-hidden">
+                                        <div class="h-10 sm:h-12 mt-5 sm:mt-6" style="background:rgba(0,0,0,0.6)"></div>
+                                        <div class="px-4 sm:px-6 py-4 flex-grow flex flex-col justify-center">
+                                            <div class="flex justify-end items-center">
+                                                <div class="text-xs mr-2" style="color:rgba(212,160,23,0.7)">CVV</div>
+                                                <div id="cvv-display"
+                                                    class="rounded px-3 py-2 w-16 sm:w-20 text-center font-mono text-base sm:text-lg tracking-widest shadow"
+                                                    style="background:rgba(212,160,23,0.15);border:1px solid rgba(212,160,23,0.3);color:var(--gold-light);letter-spacing:0.2em">
+                                                    •••</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-back">
-                                <div
-                                    class="card-visual-back relative rounded-xl h-full flex flex-col text-white shadow-lg dark-mode-transition overflow-hidden">
-                                    <div class="h-10 sm:h-12 mt-5 sm:mt-6" style="background:rgba(0,0,0,0.6)"></div>
-                                    <div class="px-4 sm:px-6 py-4 flex-grow flex flex-col justify-center">
-                                        <div class="flex justify-end items-center">
-                                            <div class="text-xs mr-2" style="color:rgba(212,160,23,0.7)">CVV</div>
-                                            <div id="cvv-display"
-                                                class="rounded px-3 py-2 w-16 sm:w-20 text-center font-mono text-base sm:text-lg tracking-widest shadow"
-                                                style="background:rgba(212,160,23,0.15);border:1px solid rgba(212,160,23,0.3);color:var(--gold-light);letter-spacing:0.2em">
-                                                •••</div>
-                                        </div>
-                                    </div>
+                        </div>
+
+                        <!-- Form Fields -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            <div class="sm:col-span-2">
+                                <label
+                                    class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Cardholder
+                                    Name</label>
+                                <input type="text" id="name" placeholder="Name on card"
+                                    class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label
+                                    class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Card
+                                    Number</label>
+                                <div id="card-number-element"
+                                    class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Expiry
+                                    Date</label>
+                                <div id="card-expiry-element"
+                                    class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">CVV</label>
+                                <div id="card-cvc-element"
+                                    class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Form Fields -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                        <div class="sm:col-span-2">
-                            <label
-                                class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Cardholder
-                                Name</label>
-                            <input type="text" id="name" placeholder="Name on card"
-                                class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label
-                                class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Card
-                                Number</label>
-                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19"
-                                class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
-                        </div>
-                        <div>
-                            <label
-                                class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Expiry
-                                Date</label>
-                            <input type="text" id="expiry" placeholder="MM/YY" maxlength="5"
-                                class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
-                        </div>
-                        <div>
-                            <label
-                                class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">CVV</label>
-                            <input type="password" id="cvv" placeholder="123" maxlength="3"
-                                class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
-                        </div>
-                    </div>
+                        <div id="card-errors" class="text-sm text-red-600 dark:text-red-400"></div>
+                    </form>
                 </div>
 
                 <!-- Mobile Wallets Form -->
@@ -778,8 +801,10 @@
                             <li>Scan the QR code with your mobile device</li>
                             <li>Complete the payment using your selected wallet app</li>
                         </ol>
+                        <div id="payment-request-button-element" class="mt-4 hidden"></div>
                         <div class="mt-5">
-                            <button class="btn-gold w-full px-4 py-3 rounded-md text-sm sm:text-base">Pay with Mobile
+                            <button id="wallet-fallback-button"
+                                class="btn-gold w-full px-4 py-3 rounded-md text-sm sm:text-base">Pay with Mobile
                                 Wallet</button>
                         </div>
                     </div>
@@ -953,11 +978,13 @@
                         <h3 class="font-semibold mb-4 text-sm sm:text-base dark-mode-transition"
                             style="color:var(--gold)">Bank Transfer Details</h3>
                         <div class="space-y-4 text-xs sm:text-sm text-gray-600 dark:text-dark-800 dark-mode-transition">
-                            <p>Use the beneficiary account below and submit your sender bank details for transfer reconciliation.</p>
+                            <p>Use the beneficiary account below and submit your sender bank details for transfer
+                                reconciliation.</p>
 
                             <div class="p-3 sm:p-4 rounded-md dark-mode-transition"
                                 style="background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2)">
-                                <h4 class="font-semibold mb-2 text-gray-800 dark:text-gray-100">Beneficiary Account (Payment Gateway)</h4>
+                                <h4 class="font-semibold mb-2 text-gray-800 dark:text-gray-100">Beneficiary Account
+                                    (Payment Gateway)</h4>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2 bank-grid">
                                     <span class="font-semibold text-gray-800 dark:text-gray-200">Bank Name:</span>
                                     <span class="sm:col-span-2">Global Settlement Bank</span>
@@ -975,18 +1002,22 @@
                             </div>
 
                             <form id="bank-transfer-form" class="space-y-4" novalidate>
-                                <h4 class="font-semibold text-gray-800 dark:text-gray-100">Your Bank Details (Sender)</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 two-col-form bank-details-grid">
+                                <h4 class="font-semibold text-gray-800 dark:text-gray-100">Your Bank Details (Sender)
+                                </h4>
+                                <div
+                                    class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 two-col-form bank-details-grid">
                                     <div>
                                         <label for="sender-name"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Account Holder Name</label>
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Account
+                                            Holder Name</label>
                                         <input id="sender-name" type="text" required autocomplete="name"
                                             placeholder="Full legal account holder name"
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                     </div>
                                     <div>
                                         <label for="sender-country"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Bank Country/Region</label>
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Bank
+                                            Country/Region</label>
                                         <select id="sender-country" required
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                             <option value="">Select country/region</option>
@@ -1002,21 +1033,24 @@
                                     </div>
                                     <div>
                                         <label for="sender-bank-name"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Your Bank Name</label>
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Your
+                                            Bank Name</label>
                                         <input id="sender-bank-name" type="text" required autocomplete="organization"
                                             placeholder="e.g., HSBC, Chase, SBI"
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                     </div>
                                     <div>
                                         <label for="sender-account-number"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Account Number</label>
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Account
+                                            Number</label>
                                         <input id="sender-account-number" type="text" required inputmode="numeric"
                                             placeholder="Account number"
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                     </div>
                                     <div>
                                         <label for="routing-code-type"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Local Clearing Code Type</label>
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Local
+                                            Clearing Code Type</label>
                                         <select id="routing-code-type" required
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                             <option value="">Choose code type</option>
@@ -1031,15 +1065,18 @@
                                     </div>
                                     <div>
                                         <label for="routing-code-value"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Local Clearing Code</label>
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Local
+                                            Clearing Code</label>
                                         <input id="routing-code-value" type="text" required
                                             placeholder="e.g., 021000021 or 12-34-56"
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                     </div>
                                     <div>
                                         <label for="sender-iban"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">IBAN (if applicable)</label>
-                                        <input id="sender-iban" type="text" placeholder="Optional for non-IBAN countries"
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">IBAN
+                                            (if applicable)</label>
+                                        <input id="sender-iban" type="text"
+                                            placeholder="Optional for non-IBAN countries"
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                     </div>
                                     <div>
@@ -1060,7 +1097,8 @@
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <p class="ml-3 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
-                                        Entering sender details improves global transfer matching (SWIFT, local clearing, and regional banking rails).
+                                        Entering sender details improves global transfer matching (SWIFT, local
+                                        clearing, and regional banking rails).
                                     </p>
                                 </div>
                             </div>
@@ -1130,7 +1168,8 @@
                 </div>
                 <div class="flex justify-between text-sm sm:text-base">
                     <span class="text-gray-600 dark:text-dark-800 dark-mode-transition">Transaction ID:</span>
-                    <span class="font-medium text-gray-900 dark:text-white dark-mode-transition">TXN123456789</span>
+                    <span id="success-transaction"
+                        class="font-medium text-gray-900 dark:text-white dark-mode-transition">TXN123456789</span>
                 </div>
             </div>
             <button id="close-modal"
@@ -1191,125 +1230,196 @@
             osQuery.addListener(handleThemeChange);
         }
 
-        // ── Card display functionality ────────────────────────────────────
+        // ── Card display and Stripe Elements integration ────────────────────
         const cardContainer = document.querySelector('.card-container');
         const nameInput = document.getElementById('name');
-        const cardNumberInput = document.getElementById('card-number');
-        const expiryInput = document.getElementById('expiry');
-        const cvvInput = document.getElementById('cvv');
-
         const nameDisplay = document.getElementById('name-display');
         const cardNumberDisplay = document.getElementById('card-number-display');
         const expiryDisplay = document.getElementById('expiry-display');
         const cvvDisplay = document.getElementById('cvv-display');
         const cardBrand = document.getElementById('card-brand');
-        let cvvLength = 3;
-        let cvvMaskTimer;
-
-        function updateCvvSettings() {
-            if (cardBrand.textContent === 'AMEX') {
-                cvvLength = 4;
-            } else {
-                cvvLength = 3;
-            }
-            cvvInput.maxLength = cvvLength;
-            cvvInput.placeholder = cvvLength === 4 ? '1234' : '123';
-            const value = cvvInput.value.slice(0, cvvLength).replace(/\D/g, '');
-            cvvInput.value = value;
-            maskCvv();
-        }
-
-        function maskCvv() {
-            cvvInput.type = 'password';
-            const len = cvvInput.value.length;
-            cvvDisplay.textContent = len ? '•'.repeat(len) : '•'.repeat(cvvLength);
-        }
         const cardTypeDisplay = document.getElementById('card-type-display');
+        const paymentForm = document.getElementById('payment-form');
+        const cardErrors = document.getElementById('card-errors');
+        const walletFallbackButton = document.getElementById('wallet-fallback-button');
+        const paymentRequestButtonElement = document.getElementById('payment-request-button-element');
 
-        // Card type selection
-        const creditCardRadio = document.getElementById('credit-card');
-        const debitCardRadio = document.getElementById('debit-card');
+        const stripe = Stripe('pk_test_replace_with_your_publishable_key');
+        const elements = stripe.elements();
 
-        creditCardRadio.addEventListener('change', function () {
-            if (this.checked) {
-                cardTypeDisplay.textContent = 'Credit Card';
-            }
+        const stripeStyle = {
+            base: {
+                color: '#111827',
+                fontFamily: 'Inter, system-ui, sans-serif',
+                fontSize: '16px',
+                '::placeholder': {
+                    color: '#9ca3af',
+                },
+                iconColor: '#b8860b',
+            },
+            invalid: {
+                color: '#dc2626',
+                iconColor: '#dc2626',
+            },
+        };
+
+        const cardNumberElement = elements.create('cardNumber', {
+            style: stripeStyle,
+            showIcon: true,
         });
+        const cardExpiryElement = elements.create('cardExpiry', { style: stripeStyle });
+        const cardCvcElement = elements.create('cardCvc', { style: stripeStyle });
 
-        debitCardRadio.addEventListener('change', function () {
-            if (this.checked) {
-                cardTypeDisplay.textContent = 'Debit Card';
+        cardNumberElement.mount('#card-number-element');
+        cardExpiryElement.mount('#card-expiry-element');
+        cardCvcElement.mount('#card-cvc-element');
+
+        function normalizeBrand(brand) {
+            switch (brand) {
+                case 'visa': return 'VISA';
+                case 'mastercard': return 'MASTERCARD';
+                case 'amex': return 'AMEX';
+                case 'discover': return 'DISCOVER';
+                case 'diners': return 'DINERS';
+                case 'jcb': return 'JCB';
+                default: return 'CARD';
             }
-        });
+        }
 
-        // Format card number with spaces
-        cardNumberInput.addEventListener('input', function (e) {
-            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-            let formattedValue = '';
+        function updateCardDisplay(brand, expiryComplete, cvcComplete) {
+            cardBrand.textContent = normalizeBrand(brand);
+            cardNumberDisplay.textContent = '•••• •••• •••• ••••';
+            expiryDisplay.textContent = expiryComplete ? 'MM/YY' : 'MM/YY';
+            cvvDisplay.textContent = cvcComplete ? (brand === 'amex' ? '••••' : '•••') : (brand === 'amex' ? '••••' : '•••');
+        }
 
-            for (let i = 0; i < value.length; i++) {
-                if (i > 0 && i % 4 === 0) {
-                    formattedValue += ' ';
-                }
-                formattedValue += value[i];
+        function handleElementChange(event) {
+            if (event.brand) {
+                cardBrand.textContent = normalizeBrand(event.brand);
             }
 
-            e.target.value = formattedValue;
-
-            // Update card display
-            cardNumberDisplay.textContent = formattedValue || '•••• •••• •••• ••••';
-
-            // Detect card type
-            if (value.startsWith('4')) {
-                cardBrand.textContent = 'VISA';
-            } else if (/^5[1-5]/.test(value)) {
-                cardBrand.textContent = 'MASTERCARD';
-            } else if (/^3[47]/.test(value)) {
-                cardBrand.textContent = 'AMEX';
-            } else if (/^6(?:011|5)/.test(value)) {
-                cardBrand.textContent = 'DISCOVER';
+            if (event.error) {
+                cardErrors.textContent = event.error.message;
             } else {
-                cardBrand.textContent = 'CARD';
-            }
-            updateCvvSettings();
-        });
-
-        // Format expiry date
-        expiryInput.addEventListener('input', function (e) {
-            let value = e.target.value.replace(/\D/g, '');
-
-            if (value.length > 2) {
-                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                cardErrors.textContent = '';
             }
 
-            e.target.value = value;
-            expiryDisplay.textContent = value || 'MM/YY';
-        });
+            const expiryComplete = event.elementType === 'cardExpiry' ? event.complete : cardExpiryElement._complete;
+            const cvcComplete = event.elementType === 'cardCvc' ? event.complete : cardCvcElement._complete;
+            updateCardDisplay(event.brand || cardBrand.textContent.toLowerCase(), expiryComplete, cvcComplete);
+        }
 
-        // Update name display
-        nameInput.addEventListener('input', function (e) {
-            nameDisplay.textContent = e.target.value || 'YOUR NAME';
-        });
+        cardNumberElement.on('change', handleElementChange);
+        cardExpiryElement.on('change', handleElementChange);
+        cardCvcElement.on('change', handleElementChange);
 
-        // Flip card when focusing on CVV
-        cvvInput.addEventListener('focus', function () {
+        cardCvcElement.on('focus', function () {
             cardContainer.classList.add('flipped');
         });
-
-        cvvInput.addEventListener('blur', function () {
+        cardCvcElement.on('blur', function () {
             cardContainer.classList.remove('flipped');
         });
 
-        cvvInput.addEventListener('input', function (e) {
-            let value = e.target.value.replace(/\D/g, '').slice(0, cvvLength);
-            e.target.value = value;
-            cvvInput.type = 'text';
-            cvvDisplay.textContent = value || '•'.repeat(cvvLength);
-            clearTimeout(cvvMaskTimer);
-            cvvMaskTimer = setTimeout(maskCvv, 1000);
+        function setPaymentButtonState(isLoading) {
+            payButton.disabled = isLoading;
+            payButton.textContent = isLoading ? 'Processing…' : `Pay ${payButtonAmount.textContent}`;
+        }
+
+        function getSelectedCurrency() {
+            const selectedOption = currencySelector.options[currencySelector.selectedIndex];
+            return {
+                rate: parseFloat(selectedOption.dataset.rate),
+                symbol: selectedOption.dataset.symbol,
+                code: selectedOption.value,
+            };
+        }
+
+        function getTotalAmountCents() {
+            const selectedCurrency = getSelectedCurrency();
+            const baseTotal = parseFloat(totalPrice.dataset.amount);
+            return Math.round(baseTotal * selectedCurrency.rate * 100);
+        }
+
+        async function createPaymentIntent() {
+            const selectedCurrency = getSelectedCurrency();
+            const response = await fetch('/create-payment-intent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    amount: getTotalAmountCents(),
+                    currency: selectedCurrency.code,
+                    description: 'Premium Product purchase',
+                    metadata: {
+                        order_currency: selectedCurrency.code,
+                        order_amount: totalPrice.dataset.amount,
+                    },
+                }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Unable to create payment intent.');
+            }
+
+            return response.json();
+        }
+
+        async function handleCardPayment(event) {
+            event.preventDefault();
+            const customerName = nameInput.value.trim();
+
+            if (!customerName) {
+                cardErrors.textContent = 'Please enter the cardholder name.';
+                nameInput.focus();
+                return;
+            }
+
+            setPaymentButtonState(true);
+
+            try {
+                const { clientSecret } = await createPaymentIntent();
+
+                const result = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: cardNumberElement,
+                        billing_details: {
+                            name: customerName,
+                        },
+                    },
+                    setup_future_usage: 'off_session',
+                });
+
+                if (result.error) {
+                    cardErrors.textContent = result.error.message;
+                    setPaymentButtonState(false);
+                    return;
+                }
+
+                if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
+                    successMethod.textContent = cardTypeDisplay.textContent;
+                    successModal.classList.remove('hidden');
+                    successAmount.textContent = `${getSelectedCurrency().symbol}${(getTotalAmountCents() / 100).toFixed(2)}`;
+                    successCurrency.textContent = getSelectedCurrency().code;
+                    document.getElementById('success-method').textContent = 'Credit Card';
+                    document.getElementById('success-transaction').textContent = result.paymentIntent.id || 'TXN123456789';
+                }
+            } catch (error) {
+                cardErrors.textContent = error.message;
+            } finally {
+                setPaymentButtonState(false);
+            }
+        }
+
+        payButton.addEventListener('click', handleCardPayment);
+
+        walletFallbackButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            alert('Mobile wallet checkout is available with Stripe Payment Request Button when supported. Deploy this page on HTTPS and configure wallet payment support on your backend.');
         });
 
-        cvvInput.addEventListener('blur', maskCvv);
+        updateCardDisplay('card', false, false);
 
         // ── Tab switching ─────────────────────────────────────────────────
         const tabCard = document.getElementById('tab-card');
