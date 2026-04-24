@@ -421,19 +421,6 @@
                     <div class="relative">
                         <select id="currency-selector" title="Select currency"
                             class="input-gold appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
-                            <option value="USD" data-symbol="$" data-rate="1">USD - US Dollar ($)</option>
-                            <option value="EUR" data-symbol="€" data-rate="0.91">EUR - Euro (€)</option>
-                            <option value="GBP" data-symbol="£" data-rate="0.78">GBP - British Pound (£)</option>
-                            <option value="JPY" data-symbol="¥" data-rate="149.82">JPY - Japanese Yen (¥)</option>
-                            <option value="CAD" data-symbol="C$" data-rate="1.36">CAD - Canadian Dollar (C$)</option>
-                            <option value="AUD" data-symbol="A$" data-rate="1.51">AUD - Australian Dollar (A$)</option>
-                            <option value="CNY" data-symbol="¥" data-rate="7.24">CNY - Chinese Yuan (¥)</option>
-                            <option value="INR" data-symbol="₹" data-rate="83.36">INR - Indian Rupee (₹)</option>
-                            <option value="BRL" data-symbol="R$" data-rate="5.05">BRL - Brazilian Real (R$)</option>
-                            <option value="RUB" data-symbol="₽" data-rate="92.30">RUB - Russian Ruble (₽)</option>
-                            <option value="ZAR" data-symbol="R" data-rate="18.31">ZAR - South African Rand (R)</option>
-                            <option value="SGD" data-symbol="S$" data-rate="1.34">SGD - Singapore Dollar (S$)</option>
-                            <option value="MXN" data-symbol="$" data-rate="16.73">MXN - Mexican Peso ($)</option>
                         </select>
                         <div
                             class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-dark-900 dark-mode-transition">
@@ -444,12 +431,41 @@
                             </svg>
                         </div>
                     </div>
+                    <p class="mt-3 text-xs text-gray-500 dark:text-dark-700 dark-mode-transition">Choose from 235 global
+                        currency options with worldwide coverage. Rates shown are illustrative; connect to a live FX
+                        service for real-time conversion.</p>
                 </div>
 
                 <!-- Order Summary -->
                 <div class="p-4 sm:p-6">
                     <h2 class="text-base sm:text-lg md:text-xl font-semibold mb-5 dark-mode-transition"
                         style="color: var(--gold);">Order Summary</h2>
+
+                    <div id="customer-details"
+                        class="mb-5 p-4 rounded-2xl border border-gray-200 dark:border-dark-600 bg-gray-50 dark:bg-dark-300 dark-mode-transition">
+                        <div
+                            class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-gray-600 dark:text-dark-800">
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">Customer Name</p>
+                                <p id="customer-name" class="mt-1 text-sm text-gray-700 dark:text-dark-900">Guest</p>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">Payment Method</p>
+                                <p id="customer-method" class="mt-1 text-sm text-gray-700 dark:text-dark-900">Credit
+                                    Card</p>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">Currency</p>
+                                <p id="customer-currency" class="mt-1 text-sm text-gray-700 dark:text-dark-900">USD •
+                                    United States</p>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">Country / Region</p>
+                                <p id="customer-country" class="mt-1 text-sm text-gray-700 dark:text-dark-900">United
+                                    States</p>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Product List -->
                     <div class="space-y-4 mb-6">
@@ -525,10 +541,11 @@
                         class="whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium tab-active dark-mode-transition">Credit/Debit
                         Card</button>
                     <button id="tab-wallet"
-                        class="whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Mobile
+                        class="whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Digital
                         Wallets</button>
                     <button id="tab-installment"
-                        class="whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Installments</button>
+                        class="whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">EMI
+                        Options</button>
                     <button id="tab-paypal"
                         class="whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">PayPal</button>
                     <button id="tab-bank"
@@ -779,7 +796,7 @@
                             <li>Complete the payment using your selected wallet app</li>
                         </ol>
                         <div class="mt-5">
-                            <button class="btn-gold w-full px-4 py-3 rounded-md text-sm sm:text-base">Pay with Mobile
+                            <button class="btn-gold w-full px-4 py-3 rounded-md text-sm sm:text-base">Pay with Digital
                                 Wallet</button>
                         </div>
                     </div>
@@ -790,7 +807,7 @@
                     <div class="p-4 sm:p-6 rounded-lg dark-mode-transition"
                         style="background:rgba(212,160,23,0.05);border:1px solid rgba(212,160,23,0.15)">
                         <h3 class="text-sm font-semibold mb-4 dark-mode-transition" style="color:var(--gold)">Choose
-                            your installment plan</h3>
+                            your EMI plan</h3>
                         <div class="mb-6">
                             <label
                                 class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-2 dark-mode-transition">Number
@@ -921,7 +938,7 @@
                         <div class="pt-3 sm:pt-4">
                             <button id="installment-button"
                                 class="btn-gold w-full px-4 py-3 rounded-md text-sm sm:text-base">Continue with
-                                Installments</button>
+                                EMI Options</button>
                         </div>
                     </div>
                 </div>
@@ -953,40 +970,25 @@
                         <h3 class="font-semibold mb-4 text-sm sm:text-base dark-mode-transition"
                             style="color:var(--gold)">Bank Transfer Details</h3>
                         <div class="space-y-4 text-xs sm:text-sm text-gray-600 dark:text-dark-800 dark-mode-transition">
-                            <p>Use the beneficiary account below and submit your sender bank details for transfer reconciliation.</p>
-
-                            <div class="p-3 sm:p-4 rounded-md dark-mode-transition"
-                                style="background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2)">
-                                <h4 class="font-semibold mb-2 text-gray-800 dark:text-gray-100">Beneficiary Account (Payment Gateway)</h4>
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2 bank-grid">
-                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Bank Name:</span>
-                                    <span class="sm:col-span-2">Global Settlement Bank</span>
-                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Beneficiary:</span>
-                                    <span class="sm:col-span-2">Demo Company Ltd</span>
-                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Account Number:</span>
-                                    <span class="sm:col-span-2 break-all">001234567890</span>
-                                    <span class="font-semibold text-gray-800 dark:text-gray-200">IBAN:</span>
-                                    <span class="sm:col-span-2 break-all">GB29NWBK60161331926819</span>
-                                    <span class="font-semibold text-gray-800 dark:text-gray-200">SWIFT/BIC:</span>
-                                    <span class="sm:col-span-2">NWBKGB2L</span>
-                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Reference:</span>
-                                    <span class="sm:col-span-2">ORDER-12345</span>
-                                </div>
-                            </div>
+                            <p>Enter your sender bank details to complete the transfer reconciliation.</p>
 
                             <form id="bank-transfer-form" class="space-y-4" novalidate>
-                                <h4 class="font-semibold text-gray-800 dark:text-gray-100">Your Bank Details (Sender)</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 two-col-form bank-details-grid">
+                                <h4 class="font-semibold text-gray-800 dark:text-gray-100">Your Bank Details (Sender)
+                                </h4>
+                                <div
+                                    class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 two-col-form bank-details-grid">
                                     <div>
                                         <label for="sender-name"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Account Holder Name</label>
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Account
+                                            Holder Name</label>
                                         <input id="sender-name" type="text" required autocomplete="name"
                                             placeholder="Full legal account holder name"
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                     </div>
                                     <div>
                                         <label for="sender-country"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Bank Country/Region</label>
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Bank
+                                            Country/Region</label>
                                         <select id="sender-country" required
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                             <option value="">Select country/region</option>
@@ -1002,21 +1004,24 @@
                                     </div>
                                     <div>
                                         <label for="sender-bank-name"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Your Bank Name</label>
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Your
+                                            Bank Name</label>
                                         <input id="sender-bank-name" type="text" required autocomplete="organization"
                                             placeholder="e.g., HSBC, Chase, SBI"
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                     </div>
                                     <div>
                                         <label for="sender-account-number"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Account Number</label>
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Account
+                                            Number</label>
                                         <input id="sender-account-number" type="text" required inputmode="numeric"
                                             placeholder="Account number"
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                     </div>
                                     <div>
                                         <label for="routing-code-type"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Local Clearing Code Type</label>
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Local
+                                            Clearing Code Type</label>
                                         <select id="routing-code-type" required
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                             <option value="">Choose code type</option>
@@ -1031,15 +1036,18 @@
                                     </div>
                                     <div>
                                         <label for="routing-code-value"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Local Clearing Code</label>
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">Local
+                                            Clearing Code</label>
                                         <input id="routing-code-value" type="text" required
                                             placeholder="e.g., 021000021 or 12-34-56"
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                     </div>
                                     <div>
                                         <label for="sender-iban"
-                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">IBAN (if applicable)</label>
-                                        <input id="sender-iban" type="text" placeholder="Optional for non-IBAN countries"
+                                            class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1">IBAN
+                                            (if applicable)</label>
+                                        <input id="sender-iban" type="text"
+                                            placeholder="Optional for non-IBAN countries"
                                             class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm">
                                     </div>
                                     <div>
@@ -1060,7 +1068,8 @@
                                             clip-rule="evenodd"></path>
                                     </svg>
                                     <p class="ml-3 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
-                                        Entering sender details improves global transfer matching (SWIFT, local clearing, and regional banking rails).
+                                        Entering sender details improves global transfer matching (SWIFT, local
+                                        clearing, and regional banking rails).
                                     </p>
                                 </div>
                             </div>
@@ -1141,6 +1150,283 @@
     </div>
 
     <script>
+        const currencyData = [
+            { country: 'Afghanistan', currency: 'AFN', currencyName: 'Afghani', symbol: 'AFN', rate: 1 },
+            { country: 'Albania', currency: 'ALL', currencyName: 'Lek', symbol: 'L', rate: 1 },
+            { country: 'Algeria', currency: 'DZD', currencyName: 'Algerian Dinar', symbol: 'DZD', rate: 1 },
+            { country: 'American Samoa', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Andorra', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Angola', currency: 'AOA', currencyName: 'Kwanza', symbol: 'AOA', rate: 1 },
+            { country: 'Anguilla', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Antigua and Barbuda', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Argentina', currency: 'ARS', currencyName: 'Argentine Peso', symbol: 'ARS', rate: 1 },
+            { country: 'Armenia', currency: 'AMD', currencyName: 'Armenian Dram', symbol: '֏', rate: 1 },
+            { country: 'Aruba', currency: 'AWG', currencyName: 'Aruban Florin', symbol: 'Afl', rate: 1 },
+            { country: 'Australia', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Austria', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Azerbaijan', currency: 'AZN', currencyName: 'Azerbaijan Manat', symbol: '₼', rate: 1 },
+            { country: 'Bahamas', currency: 'BSD', currencyName: 'Bahamian Dollar', symbol: '$', rate: 1 },
+            { country: 'Bahrain', currency: 'BHD', currencyName: 'Bahraini Dinar', symbol: 'ب.د', rate: 1 },
+            { country: 'Bangladesh', currency: 'BDT', currencyName: 'Taka', symbol: '৳', rate: 1 },
+            { country: 'Barbados', currency: 'BBD', currencyName: 'Barbados Dollar', symbol: 'Bds$', rate: 1 },
+            { country: 'Belarus', currency: 'BYR', currencyName: 'BYR', symbol: 'BYR', rate: 1 },
+            { country: 'Belgium', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Belize', currency: 'BZD', currencyName: 'Belize Dollar', symbol: 'BZ$', rate: 1 },
+            { country: 'Benin', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Bermuda', currency: 'BMD', currencyName: 'Bermudian Dollar', symbol: '$', rate: 1 },
+            { country: 'Bhutan', currency: 'BTN', currencyName: 'Ngultrum', symbol: 'Nu.', rate: 1 },
+            { country: 'Bolivia, Plurinational State of', currency: 'BOB', currencyName: 'Boliviano', symbol: 'BOB', rate: 1 },
+            { country: 'Bosnia and Herzegovina', currency: 'BAM', currencyName: 'Convertible Mark', symbol: 'KM', rate: 1 },
+            { country: 'Botswana', currency: 'BWP', currencyName: 'Pula', symbol: 'P', rate: 1 },
+            { country: 'Brazil', currency: 'BRL', currencyName: 'Brazilian Real', symbol: 'R$', rate: 1 },
+            { country: 'British Indian Ocean Territory', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Brunei Darussalam', currency: 'BND', currencyName: 'Brunei Dollar', symbol: 'BND', rate: 1 },
+            { country: 'Bulgaria', currency: 'BGN', currencyName: 'BGN', symbol: 'лв', rate: 1 },
+            { country: 'Burkina Faso', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Burundi', currency: 'BIF', currencyName: 'Burundi Franc', symbol: 'FBu', rate: 1 },
+            { country: 'Cabo Verde', currency: 'CVE', currencyName: 'Cabo Verde Escudo', symbol: 'CVE', rate: 1 },
+            { country: 'Cambodia', currency: 'KHR', currencyName: 'Riel', symbol: 'KHR', rate: 1 },
+            { country: 'Cameroon', currency: 'XAF', currencyName: 'CFA Franc BEAC', symbol: 'FCFA', rate: 1 },
+            { country: 'Canada', currency: 'CAD', currencyName: 'Canadian Dollar', symbol: 'C$', rate: 1 },
+            { country: 'Cayman Islands', currency: 'KYD', currencyName: 'Cayman Islands Dollar', symbol: 'KY$', rate: 1 },
+            { country: 'Central African Republic', currency: 'XAF', currencyName: 'CFA Franc BEAC', symbol: 'FCFA', rate: 1 },
+            { country: 'Chad', currency: 'XAF', currencyName: 'CFA Franc BEAC', symbol: 'FCFA', rate: 1 },
+            { country: 'Chile', currency: 'CLF', currencyName: 'Unidad de Fomento', symbol: 'CLF', rate: 1 },
+            { country: 'China', currency: 'CNY', currencyName: 'Yuan Renminbi', symbol: '¥', rate: 1 },
+            { country: 'Christmas Island', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Cocos (Keeling) Islands', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Colombia', currency: 'COP', currencyName: 'Colombian Peso', symbol: 'COP', rate: 1 },
+            { country: 'Comoros', currency: 'KMF', currencyName: 'Comorian Franc', symbol: 'KMF', rate: 1 },
+            { country: 'Congo', currency: 'XAF', currencyName: 'CFA Franc BEAC', symbol: 'FCFA', rate: 1 },
+            { country: 'Congo, The Democratic Republic of the', currency: 'CDF', currencyName: 'Congolese Franc', symbol: 'CDF', rate: 1 },
+            { country: 'Cook Islands', currency: 'NZD', currencyName: 'New Zealand Dollar', symbol: 'NZ$', rate: 1 },
+            { country: 'Costa Rica', currency: 'CRC', currencyName: 'Costa Rican Colon', symbol: '₡', rate: 1 },
+            { country: 'Croatia', currency: 'HRK', currencyName: 'HRK', symbol: 'kn', rate: 1 },
+            { country: 'Cuba', currency: 'CUC', currencyName: 'CUC', symbol: 'CUC', rate: 1 },
+            { country: 'Cyprus', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Czechia', currency: 'CZK', currencyName: 'Czech Koruna', symbol: 'Kč', rate: 1 },
+            { country: 'Côte d\'Ivoire', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Denmark', currency: 'DKK', currencyName: 'Danish Krone', symbol: 'kr', rate: 1 },
+            { country: 'Djibouti', currency: 'DJF', currencyName: 'Djibouti Franc', symbol: 'Fdj', rate: 1 },
+            { country: 'Dominica', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Dominican Republic', currency: 'DOP', currencyName: 'Dominican Peso', symbol: 'RD$', rate: 1 },
+            { country: 'Ecuador', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Egypt', currency: 'EGP', currencyName: 'Egyptian Pound', symbol: 'EGP', rate: 1 },
+            { country: 'El Salvador', currency: 'SVC', currencyName: 'El Salvador Colon', symbol: 'SVC', rate: 1 },
+            { country: 'Equatorial Guinea', currency: 'XAF', currencyName: 'CFA Franc BEAC', symbol: 'FCFA', rate: 1 },
+            { country: 'Eritrea', currency: 'ERN', currencyName: 'Nakfa', symbol: 'ERN', rate: 1 },
+            { country: 'Estonia', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Eswatini', currency: 'SZL', currencyName: 'Lilangeni', symbol: 'L', rate: 1 },
+            { country: 'Ethiopia', currency: 'ETB', currencyName: 'Ethiopian Birr', symbol: 'Br', rate: 1 },
+            { country: 'Falkland Islands (Malvinas)', currency: 'FKP', currencyName: 'Falkland Islands Pound', symbol: '£', rate: 1 },
+            { country: 'Faroe Islands', currency: 'DKK', currencyName: 'Danish Krone', symbol: 'kr', rate: 1 },
+            { country: 'Fiji', currency: 'FJD', currencyName: 'Fiji Dollar', symbol: 'FJ$', rate: 1 },
+            { country: 'Finland', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'France', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'French Guiana', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'French Polynesia', currency: 'XPF', currencyName: 'CFP Franc', symbol: 'CFP', rate: 1 },
+            { country: 'French Southern Territories', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Gabon', currency: 'XAF', currencyName: 'CFA Franc BEAC', symbol: 'FCFA', rate: 1 },
+            { country: 'Gambia', currency: 'GMD', currencyName: 'Dalasi', symbol: 'D', rate: 1 },
+            { country: 'Georgia', currency: 'GEL', currencyName: 'Lari', symbol: '₾', rate: 1 },
+            { country: 'Germany', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Ghana', currency: 'GHS', currencyName: 'Ghana Cedi', symbol: '₵', rate: 1 },
+            { country: 'Gibraltar', currency: 'GIP', currencyName: 'Gibraltar Pound', symbol: '£', rate: 1 },
+            { country: 'Greece', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Greenland', currency: 'DKK', currencyName: 'Danish Krone', symbol: 'kr', rate: 1 },
+            { country: 'Grenada', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Guadeloupe', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Guam', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Guatemala', currency: 'GTQ', currencyName: 'Quetzal', symbol: 'Q', rate: 1 },
+            { country: 'Guernsey', currency: 'GBP', currencyName: 'Pound Sterling', symbol: '£', rate: 1 },
+            { country: 'Guinea', currency: 'GNF', currencyName: 'Guinean Franc', symbol: 'GNF', rate: 1 },
+            { country: 'Guinea-Bissau', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Guyana', currency: 'GYD', currencyName: 'Guyana Dollar', symbol: 'GYD', rate: 1 },
+            { country: 'Haiti', currency: 'HTG', currencyName: 'Gourde', symbol: 'G', rate: 1 },
+            { country: 'Heard Island and McDonald Islands', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Holy See (Vatican City State)', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Honduras', currency: 'HNL', currencyName: 'Lempira', symbol: 'L', rate: 1 },
+            { country: 'Hong Kong', currency: 'HKD', currencyName: 'Hong Kong Dollar', symbol: 'HK$', rate: 1 },
+            { country: 'Hungary', currency: 'HUF', currencyName: 'Forint', symbol: 'Ft', rate: 1 },
+            { country: 'Iceland', currency: 'ISK', currencyName: 'Iceland Krona', symbol: 'ISK', rate: 1 },
+            { country: 'India', currency: 'INR', currencyName: 'Indian Rupee', symbol: '₹', rate: 1 },
+            { country: 'Indonesia', currency: 'IDR', currencyName: 'Rupiah', symbol: 'Rp', rate: 1 },
+            { country: 'Iran, Islamic Republic of', currency: 'IRR', currencyName: 'Iranian Rial', symbol: 'IRR', rate: 1 },
+            { country: 'Iraq', currency: 'IQD', currencyName: 'Iraqi Dinar', symbol: 'IQD', rate: 1 },
+            { country: 'Ireland', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Isle of Man', currency: 'GBP', currencyName: 'Pound Sterling', symbol: '£', rate: 1 },
+            { country: 'Israel', currency: 'ILS', currencyName: 'New Israeli Sheqel', symbol: '₪', rate: 1 },
+            { country: 'Italy', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Jamaica', currency: 'JMD', currencyName: 'Jamaican Dollar', symbol: 'J$', rate: 1 },
+            { country: 'Japan', currency: 'JPY', currencyName: 'Yen', symbol: '¥', rate: 1 },
+            { country: 'Jersey', currency: 'GBP', currencyName: 'Pound Sterling', symbol: '£', rate: 1 },
+            { country: 'Jordan', currency: 'JOD', currencyName: 'Jordanian Dinar', symbol: 'د.ا', rate: 1 },
+            { country: 'Kazakhstan', currency: 'KZT', currencyName: 'Tenge', symbol: '₸', rate: 1 },
+            { country: 'Kenya', currency: 'KES', currencyName: 'Kenyan Shilling', symbol: 'KSh', rate: 1 },
+            { country: 'Kiribati', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Korea, Democratic People\'s Republic of', currency: 'KPW', currencyName: 'North Korean Won', symbol: '₩', rate: 1 },
+            { country: 'Korea, Republic of', currency: 'KRW', currencyName: 'Won', symbol: '₩', rate: 1 },
+            { country: 'Kuwait', currency: 'KWD', currencyName: 'Kuwaiti Dinar', symbol: 'د.ك', rate: 1 },
+            { country: 'Kyrgyzstan', currency: 'KGS', currencyName: 'Som', symbol: 'лв', rate: 1 },
+            { country: 'Lao People\'s Democratic Republic', currency: 'LAK', currencyName: 'Lao Kip', symbol: '₭', rate: 1 },
+            { country: 'Latvia', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Lebanon', currency: 'LBP', currencyName: 'Lebanese Pound', symbol: 'LBP', rate: 1 },
+            { country: 'Lesotho', currency: 'LSL', currencyName: 'Loti', symbol: 'L', rate: 1 },
+            { country: 'Liberia', currency: 'LRD', currencyName: 'Liberian Dollar', symbol: 'L$', rate: 1 },
+            { country: 'Libya', currency: 'LYD', currencyName: 'Libyan Dinar', symbol: 'LYD', rate: 1 },
+            { country: 'Liechtenstein', currency: 'CHF', currencyName: 'Swiss Franc', symbol: 'CHF', rate: 1 },
+            { country: 'Lithuania', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Luxembourg', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Madagascar', currency: 'MGA', currencyName: 'Malagasy Ariary', symbol: 'Ar', rate: 1 },
+            { country: 'Malawi', currency: 'MWK', currencyName: 'Malawi Kwacha', symbol: 'MWK', rate: 1 },
+            { country: 'Malaysia', currency: 'MYR', currencyName: 'Malaysian Ringgit', symbol: 'RM', rate: 1 },
+            { country: 'Maldives', currency: 'MVR', currencyName: 'Rufiyaa', symbol: 'Rf', rate: 1 },
+            { country: 'Mali', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Malta', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Marshall Islands', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Martinique', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Mauritania', currency: 'MRO', currencyName: 'MRO', symbol: 'MRO', rate: 1 },
+            { country: 'Mauritius', currency: 'MUR', currencyName: 'Mauritius Rupee', symbol: '₨', rate: 1 },
+            { country: 'Mayotte', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Mexico', currency: 'MXN', currencyName: 'Mexican Peso', symbol: '$', rate: 1 },
+            { country: 'Micronesia, Federated States of', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Moldova, Republic of', currency: 'MDL', currencyName: 'Moldovan Leu', symbol: 'L', rate: 1 },
+            { country: 'Monaco', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Mongolia', currency: 'MNT', currencyName: 'Tugrik', symbol: '₮', rate: 1 },
+            { country: 'Montenegro', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Montserrat', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Morocco', currency: 'MAD', currencyName: 'Moroccan Dirham', symbol: 'د.م.', rate: 1 },
+            { country: 'Mozambique', currency: 'MZN', currencyName: 'Mozambique Metical', symbol: 'MT', rate: 1 },
+            { country: 'Myanmar', currency: 'MMK', currencyName: 'Kyat', symbol: 'MMK', rate: 1 },
+            { country: 'Namibia', currency: 'NAD', currencyName: 'Namibia Dollar', symbol: 'N$', rate: 1 },
+            { country: 'Nauru', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Nepal', currency: 'NPR', currencyName: 'Nepalese Rupee', symbol: 'Rs', rate: 1 },
+            { country: 'Netherlands', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'New Caledonia', currency: 'XPF', currencyName: 'CFP Franc', symbol: 'CFP', rate: 1 },
+            { country: 'New Zealand', currency: 'NZD', currencyName: 'New Zealand Dollar', symbol: 'NZ$', rate: 1 },
+            { country: 'Nicaragua', currency: 'NIO', currencyName: 'Cordoba Oro', symbol: 'C$', rate: 1 },
+            { country: 'Niger', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Nigeria', currency: 'NGN', currencyName: 'Naira', symbol: '₦', rate: 1 },
+            { country: 'Niue', currency: 'NZD', currencyName: 'New Zealand Dollar', symbol: 'NZ$', rate: 1 },
+            { country: 'Norfolk Island', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'North Macedonia', currency: 'MKD', currencyName: 'Denar', symbol: 'ден', rate: 1 },
+            { country: 'Northern Mariana Islands', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Norway', currency: 'NOK', currencyName: 'Norwegian Krone', symbol: 'kr', rate: 1 },
+            { country: 'Oman', currency: 'OMR', currencyName: 'Rial Omani', symbol: 'ر.ع', rate: 1 },
+            { country: 'Pakistan', currency: 'PKR', currencyName: 'Pakistan Rupee', symbol: 'Rs', rate: 1 },
+            { country: 'Palau', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Panama', currency: 'PAB', currencyName: 'Balboa', symbol: 'B/.', rate: 1 },
+            { country: 'Papua New Guinea', currency: 'PGK', currencyName: 'Kina', symbol: 'PGK', rate: 1 },
+            { country: 'Paraguay', currency: 'PYG', currencyName: 'Guarani', symbol: '₲', rate: 1 },
+            { country: 'Peru', currency: 'PEN', currencyName: 'Sol', symbol: 'PEN', rate: 1 },
+            { country: 'Philippines', currency: 'PHP', currencyName: 'Philippine Peso', symbol: '₱', rate: 1 },
+            { country: 'Pitcairn', currency: 'NZD', currencyName: 'New Zealand Dollar', symbol: 'NZ$', rate: 1 },
+            { country: 'Poland', currency: 'PLN', currencyName: 'Zloty', symbol: 'zł', rate: 1 },
+            { country: 'Portugal', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Puerto Rico', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Qatar', currency: 'QAR', currencyName: 'Qatari Rial', symbol: '﷼', rate: 1 },
+            { country: 'Romania', currency: 'RON', currencyName: 'Romanian Leu', symbol: 'lei', rate: 1 },
+            { country: 'Russian Federation', currency: 'RUB', currencyName: 'Russian Ruble', symbol: '₽', rate: 1 },
+            { country: 'Rwanda', currency: 'RWF', currencyName: 'Rwanda Franc', symbol: 'FRw', rate: 1 },
+            { country: 'Réunion', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Saint Helena, Ascension and Tristan da Cunha', currency: 'SHP', currencyName: 'Saint Helena Pound', symbol: '£', rate: 1 },
+            { country: 'Saint Kitts and Nevis', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Saint Lucia', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Saint Pierre and Miquelon', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Saint Vincent and the Grenadines', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Samoa', currency: 'WST', currencyName: 'Tala', symbol: 'T', rate: 1 },
+            { country: 'San Marino', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Sao Tome and Principe', currency: 'STD', currencyName: 'STD', symbol: 'STD', rate: 1 },
+            { country: 'Saudi Arabia', currency: 'SAR', currencyName: 'Saudi Riyal', symbol: '﷼', rate: 1 },
+            { country: 'Senegal', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Serbia', currency: 'RSD', currencyName: 'Serbian Dinar', symbol: 'дин', rate: 1 },
+            { country: 'Seychelles', currency: 'SCR', currencyName: 'Seychelles Rupee', symbol: '₨', rate: 1 },
+            { country: 'Sierra Leone', currency: 'SLL', currencyName: 'SLL', symbol: 'Le', rate: 1 },
+            { country: 'Singapore', currency: 'SGD', currencyName: 'Singapore Dollar', symbol: 'S$', rate: 1 },
+            { country: 'Slovakia', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Slovenia', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Solomon Islands', currency: 'SBD', currencyName: 'Solomon Islands Dollar', symbol: 'SBD', rate: 1 },
+            { country: 'Somalia', currency: 'SOS', currencyName: 'Somali Shilling', symbol: 'Sh', rate: 1 },
+            { country: 'South Africa', currency: 'ZAR', currencyName: 'Rand', symbol: 'R', rate: 1 },
+            { country: 'South Georgia and the South Sandwich Islands', currency: 'GBP', currencyName: 'Pound Sterling', symbol: '£', rate: 1 },
+            { country: 'South Sudan', currency: 'SSP', currencyName: 'South Sudanese Pound', symbol: 'SSP', rate: 1 },
+            { country: 'Spain', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Sri Lanka', currency: 'LKR', currencyName: 'Sri Lanka Rupee', symbol: 'Rs', rate: 1 },
+            { country: 'Sudan', currency: 'SDG', currencyName: 'Sudanese Pound', symbol: '£', rate: 1 },
+            { country: 'Suriname', currency: 'SRD', currencyName: 'Surinam Dollar', symbol: 'SRD', rate: 1 },
+            { country: 'Svalbard and Jan Mayen', currency: 'NOK', currencyName: 'Norwegian Krone', symbol: 'kr', rate: 1 },
+            { country: 'Sweden', currency: 'SEK', currencyName: 'Swedish Krona', symbol: 'kr', rate: 1 },
+            { country: 'Switzerland', currency: 'CHE', currencyName: 'WIR Euro', symbol: 'CHE', rate: 1 },
+            { country: 'Syrian Arab Republic', currency: 'SYP', currencyName: 'Syrian Pound', symbol: '£', rate: 1 },
+            { country: 'Taiwan, Province of China', currency: 'TWD', currencyName: 'New Taiwan Dollar', symbol: 'NT$', rate: 1 },
+            { country: 'Tajikistan', currency: 'TJS', currencyName: 'Somoni', symbol: 'ЅМ', rate: 1 },
+            { country: 'Tanzania, United Republic of', currency: 'TZS', currencyName: 'Tanzanian Shilling', symbol: 'TSh', rate: 1 },
+            { country: 'Thailand', currency: 'THB', currencyName: 'Baht', symbol: '฿', rate: 1 },
+            { country: 'Timor-Leste', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Togo', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Tokelau', currency: 'NZD', currencyName: 'New Zealand Dollar', symbol: 'NZ$', rate: 1 },
+            { country: 'Tonga', currency: 'TOP', currencyName: 'Pa’anga', symbol: 'T$', rate: 1 },
+            { country: 'Trinidad and Tobago', currency: 'TTD', currencyName: 'Trinidad and Tobago Dollar', symbol: 'TT$', rate: 1 },
+            { country: 'Tunisia', currency: 'TND', currencyName: 'Tunisian Dinar', symbol: 'TND', rate: 1 },
+            { country: 'Turkmenistan', currency: 'TMT', currencyName: 'Turkmenistan New Manat', symbol: 'TMT', rate: 1 },
+            { country: 'Tuvalu', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Türkiye', currency: 'TRY', currencyName: 'Turkish Lira', symbol: '₺', rate: 1 },
+            { country: 'Uganda', currency: 'UGX', currencyName: 'Uganda Shilling', symbol: 'USh', rate: 1 },
+            { country: 'Ukraine', currency: 'UAH', currencyName: 'Hryvnia', symbol: '₴', rate: 1 },
+            { country: 'United Arab Emirates', currency: 'AED', currencyName: 'UAE Dirham', symbol: 'د.إ', rate: 1 },
+            { country: 'United Kingdom', currency: 'GBP', currencyName: 'Pound Sterling', symbol: '£', rate: 1 },
+            { country: 'United States', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Uruguay', currency: 'UYI', currencyName: 'Uruguay Peso en Unidades Indexadas (UI)', symbol: 'UYI', rate: 1 },
+            { country: 'Uzbekistan', currency: 'UZS', currencyName: 'Uzbekistan Sum', symbol: 'лв', rate: 1 },
+            { country: 'Vanuatu', currency: 'VUV', currencyName: 'Vatu', symbol: 'VT', rate: 1 },
+            { country: 'Venezuela, Bolivarian Republic of', currency: 'VEF', currencyName: 'VEF', symbol: 'VEF', rate: 1 },
+            { country: 'Viet Nam', currency: 'VND', currencyName: 'Dong', symbol: 'VND', rate: 1 },
+            { country: 'Wallis and Futuna', currency: 'XPF', currencyName: 'CFP Franc', symbol: 'CFP', rate: 1 },
+            { country: 'Western Sahara', currency: 'MAD', currencyName: 'Moroccan Dirham', symbol: 'د.م.', rate: 1 },
+            { country: 'Yemen', currency: 'YER', currencyName: 'Yemeni Rial', symbol: 'YER', rate: 1 },
+            { country: 'Zambia', currency: 'ZMK', currencyName: 'ZMK', symbol: 'ZMK', rate: 1 },
+            { country: 'Zimbabwe', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+        ];
+        function populateCurrencySelector() {
+            const select = document.getElementById('currency-selector');
+            select.innerHTML = '';
+            const addedValues = new Set();
+
+            currencyData.forEach(entry => {
+                const optionValue = `${entry.country.replace(/[^a-zA-Z0-9]/g, '')}-${entry.currency}`;
+                if (addedValues.has(optionValue)) return;
+                addedValues.add(optionValue);
+                const option = document.createElement('option');
+                option.value = optionValue;
+                option.textContent = `${entry.country} - ${entry.currency} (${entry.currencyName})`;
+                option.dataset.currency = entry.currency;
+                option.dataset.country = entry.country;
+                option.dataset.symbol = entry.symbol;
+                option.dataset.rate = entry.rate;
+                select.appendChild(option);
+            });
+
+            const defaultIndex = currencyData.findIndex(entry => entry.country === 'United States' && entry.currency === 'USD');
+            if (defaultIndex >= 0) {
+                select.selectedIndex = defaultIndex;
+            }
+        }
+
+        function populateSenderCountry() {
+            const select = document.getElementById('sender-country');
+            const added = new Set();
+            select.innerHTML = '<option value="">Select country/region</option>';
+            currencyData.forEach(entry => {
+                if (!added.has(entry.country)) {
+                    added.add(entry.country);
+                    const option = document.createElement('option');
+                    option.value = entry.country;
+                    option.textContent = entry.country;
+                    select.appendChild(option);
+                }
+            });
+        }
+
         // ── Theme Management ──────────────────────────────────────────────
         const htmlEl = document.documentElement;
         const btnLight = document.getElementById('btn-light');
@@ -1272,6 +1558,7 @@
                 cardBrand.textContent = 'CARD';
             }
             updateCvvSettings();
+            updateCustomerDetails();
         });
 
         // Format expiry date
@@ -1289,6 +1576,7 @@
         // Update name display
         nameInput.addEventListener('input', function (e) {
             nameDisplay.textContent = e.target.value || 'YOUR NAME';
+            updateCustomerDetails();
         });
 
         // Flip card when focusing on CVV
@@ -1343,6 +1631,7 @@
             tab.classList.add('tab-active');
             tab.classList.remove('text-gray-500', 'dark:text-dark-800');
             if (showPayBtn) cardPaymentButton.classList.remove('hidden');
+            updateCustomerDetails();
         }
 
         tabCard.addEventListener('click', () => activateTab(tabCard, formCard, true));
@@ -1359,12 +1648,39 @@
         const successAmount = document.getElementById('success-amount');
         const successCurrency = document.getElementById('success-currency');
         const successMethod = document.getElementById('success-method');
+        const customerName = document.getElementById('customer-name');
+        const customerMethod = document.getElementById('customer-method');
+        const customerCurrency = document.getElementById('customer-currency');
+        const customerCountry = document.getElementById('customer-country');
+        const senderNameInput = document.getElementById('sender-name');
+        const senderCountryInput = document.getElementById('sender-country');
+
+        senderNameInput?.addEventListener('input', updateCustomerDetails);
+        senderCountryInput?.addEventListener('change', updateCustomerDetails);
+
+        function updateCustomerDetails() {
+            const activeCountry = formBank.classList.contains('hidden')
+                ? currencySelector.options[currencySelector.selectedIndex]?.dataset.country || 'United States'
+                : senderCountryInput.value || currencySelector.options[currencySelector.selectedIndex]?.dataset.country || 'United States';
+            const activeName = formBank.classList.contains('hidden')
+                ? nameInput.value.trim() || 'Guest'
+                : senderNameInput.value.trim() || nameInput.value.trim() || 'Guest';
+            const activeMethod = document.querySelector('.tab-active')?.textContent.trim() || 'Credit Card';
+            const selectedCurrency = currencySelector.options[currencySelector.selectedIndex];
+            const currencyCode = selectedCurrency?.dataset.currency || 'USD';
+
+            customerName.textContent = activeName;
+            customerMethod.textContent = activeMethod;
+            customerCurrency.textContent = `${currencyCode} • ${selectedCurrency?.dataset.country || 'United States'}`;
+            customerCountry.textContent = activeCountry;
+        }
 
         function updatePrices() {
             const selectedOption = currencySelector.options[currencySelector.selectedIndex];
             const rate = parseFloat(selectedOption.dataset.rate);
             const symbol = selectedOption.dataset.symbol;
-            const code = selectedOption.value;
+            const code = selectedOption.dataset.currency;
+            const country = selectedOption.dataset.country;
 
             priceItems.forEach(item => {
                 const baseAmount = parseFloat(item.dataset.amount);
@@ -1379,13 +1695,19 @@
 
             // Update success modal
             successAmount.textContent = `${symbol}${convertedTotal}`;
-            successCurrency.textContent = code;
+            successCurrency.textContent = `${code} (${country})`;
+
+            // Update live customer details
+            updateCustomerDetails();
 
             // Update installment amounts
             updateInstallmentAmounts();
         }
 
-        currencySelector.addEventListener('change', updatePrices);
+        currencySelector.addEventListener('change', () => {
+            updatePrices();
+            updateCustomerDetails();
+        });
 
         // Installment slider functionality
         const installmentSlider = document.getElementById('installment-slider');
@@ -1430,7 +1752,7 @@
         installmentButton.addEventListener('click', function () {
             const provider = document.querySelector('input[name="installment-provider"]:checked').value;
             const months = installmentSlider.value;
-            successMethod.textContent = `Installments (${provider}, ${months} months)`;
+            successMethod.textContent = `EMI Options (${provider}, ${months} months)`;
             successModal.classList.remove('hidden');
         });
 
@@ -1517,9 +1839,12 @@
         });
 
         // Initialize
+        populateCurrencySelector();
+        populateSenderCountry();
         updatePrices();
         updateInstallmentAmounts();
         updateCvvSettings();
+        updateCustomerDetails();
     </script>
 </body>
 

@@ -1,61 +1,155 @@
-# Payment-Gateway
+# Luxury Payment Gateway
 
-<p align = "center">
-  <img src="https://socialify.git.ci/Nihar16/Payment-Gateway/image?font=Rokkitt&name=1&pattern=Circuit+Board&theme=Auto" alt="Payment-Gateway" width="640" height="320" />
-</p>
+A secure, enterprise-grade payment processing system designed for luxury restaurants with PCI-DSS compliance, fraud prevention, multi-currency support, and wallet integration.
 
-A secure and scalable payment processing solution designed to handle online transactions efficiently. This payment gateway enables merchants to process payments, manage transactions, and integrate with multiple payment providers. Supporting 13 global currencies for now and many more to come.
+## Features
 
-## 🚀 Features
+- **PCI-DSS Compliant**: Zero card data storage using Stripe Elements
+- **Fraud Prevention**: Advanced fraud detection with Stripe Radar
+- **Multi-Currency**: Automatic currency detection and conversion
+- **Wallet Integration**: Apple Pay, Google Pay support
+- **Enterprise Security**: TLS 1.3, CSP, security headers
+- **Global Architecture**: CDN, WAF, API Gateway protection
 
-- **Secure Payment Processing**: PCI DSS compliant payment handling with encryption
-- **Multiple Payment Methods**: Support for credit cards, debit cards, and digital wallets
-- **Real-time Transaction Processing**: Instant payment validation and processing
-- **Transaction Management**: View, search, and manage payment history
-- **API Integration**: RESTful APIs for easy merchant integration
-- **Fraud Detection**: Built-in security measures to prevent fraudulent transactions
-- **Multi-currency Support**: Process payments in multiple currencies
-- **Webhook Integration**: Real-time notifications for transaction status updates
-- **Dashboard Analytics**: Comprehensive reporting and analytics
+## Architecture
 
-## 🛠️ Technology Stack
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed system design and security implementation.
 
-- **Backend**: [Specify your backend technology - e.g., Node.js, Python, Java]
-- **Database**: [Specify database - e.g., PostgreSQL, MongoDB, MySQL]
-- **Authentication**: Add your own JWT/OAuth for secure API access
-- **Payment Processors**: Integration with Stripe, PayPal, Square, etc.
-- **Security**: SSL/TLS encryption, tokenization, and secure data handling
-- **Documentation**: Swagger/OpenAPI for API documentation
+## Quick Start
 
-## 📋 Prerequisites
+### Prerequisites
 
-Before running this application, make sure you have the following installed:
+- Node.js 18+ or Python 3.8+
+- Stripe account with API keys
+- Docker (optional)
 
-- [Runtime Environment - e.g., Node.js 16+, Python 3.8+, Java 11+]
-- [Database - e.g., PostgreSQL 12+, MongoDB 4.4+]
-- Git
-- [Package Manager - e.g., npm, pip, Maven]
+### Installation
 
-## 🚀 Quick Start
+1. **Clone the repository**
 
-### 1. Clone the Repository
+   ```bash
+   git clone <repository-url>
+   cd payment-gateway
+   ```
+
+2. **Environment Setup**
+
+   ```bash
+   cp .env.example .env
+   # Edit .env with your Stripe keys
+   ```
+
+3. **Choose your backend:**
+
+   **Node.js Backend:**
+
+   ```bash
+   npm install
+   npm start
+   ```
+
+   **Python Backend:**
+
+   ```bash
+   pip install -r requirements.txt
+   python app.py
+   ```
+
+   **Docker:**
+
+   ```bash
+   docker-compose up --build
+   ```
+
+### Stripe Configuration
+
+1. Create a Stripe account at [stripe.com](https://stripe.com)
+2. Get your API keys from the dashboard
+3. Set up webhooks for payment events
+4. Configure Radar for fraud prevention
+
+### Testing
+
+The API includes health check endpoints:
+
+- `GET /health` - Service health status
+
+## Deployment
+
+### AWS Lambda (Serverless)
 
 ```bash
-git clone https://github.com/Nihar16/Payment-Gateway.git
-cd Payment-Gateway
+npm install -g serverless
+serverless deploy
 ```
 
-### 2. Install Dependencies
+### Docker Production
 
 ```bash
+docker build -t payment-api .
+docker run -p 3000:3000 --env-file .env payment-api
+```
+
+### Cloud Platforms
+
+- **AWS**: Use serverless.yml for Lambda deployment
+- **GCP**: Deploy to Cloud Run with Dockerfile
+- **Azure**: Use Azure Functions or Container Apps
+
+## Security
+
+- All card data is tokenized and never stored
+- TLS 1.3 encryption for all communications
+- Content Security Policy prevents XSS attacks
+- Rate limiting and fraud detection enabled
+- Webhook signature verification
+
+## API Endpoints
+
+- `POST /create-payment-intent` - Create payment intent
+- `POST /webhook` - Stripe webhook handler
+- `GET /transaction/:id` - Get transaction status
+- `GET /health` - Health check
+
+## Frontend Integration
+
+The payment.html file contains the complete frontend implementation with:
+
+- Stripe Elements for secure card input
+- Multi-currency support
+- Wallet payment options
+- Error handling and success confirmation
+
+## Monitoring
+
+- Health checks every 30 seconds
+- Structured logging
+- Error tracking with Sentry (optional)
+- Stripe dashboard monitoring
+
+## Contributing
+
+1. Follow security best practices
+2. Test all payment flows
+3. Update documentation
+4. Use conventional commits
+
+## License
+
+MIT License - see LICENSE file for details
+
 # For Node.js projects
+
 npm install
 
 # For Python projects
+
 pip install -r requirements.txt
 
 # For Java projects
+
 mvn install
+
 ```
 
 ### 3. Environment Configuration
@@ -319,4 +413,3 @@ This project is licensed under the [MIT License](LICENSE).
 - **V1.2** - Optimized for mobile phones and Tablets
 
 **⚠️ Important**: This is a payment processing system. Always ensure compliance with local regulations and PCI DSS requirements when handling payment data.
-
