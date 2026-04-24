@@ -35,4 +35,21 @@ functions:
               - Content-Type
               - Authorization
               - stripe-signature
-            allowCrede
+            allowCredentials: false
+      - http:
+          path: /{proxy+}
+          method: any
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - Authorization
+              - stripe-signature
+            allowCredentials: false
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 3000
