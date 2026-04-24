@@ -80,16 +80,33 @@
             transform: rotateY(180deg);
         }
 
-        /* ── Gold theme tokens ── */
-        :root {
-            --gold: #D4A017;
-            --gold-light: #F5C000;
-            --gold-dark: #B8860B;
-            --gold-glow: rgba(212, 160, 23, 0.25);
-            --surface-light: #FFFFFF;
-            --surface-dark: #050505;
-            --text-light: #111111;
-            --text-dark: #F5C000;
+        .card-visual-front {
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-network-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-logo-container {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* High contrast support for accessibility */
+        @media (prefers-contrast: high) {
+            .card-visual-front {
+                border: 2px solid currentColor;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+
+            .card-visual-front,
+            .card-network-transition,
+            .card-logo-container {
+                transition: none;
+            }
         }
 
         html:not(.dark) body {
@@ -603,14 +620,15 @@
                         <div class="card-inner">
                             <div class="card-front">
                                 <div
-                                    class="card-visual-front relative rounded-xl p-4 sm:p-5 md:p-6 h-full flex flex-col justify-between text-white shadow-lg dark-mode-transition overflow-hidden">
+                                    class="card-visual-front card-network-transition relative rounded-xl p-4 sm:p-5 md:p-6 h-full flex flex-col justify-between text-white shadow-lg dark-mode-transition overflow-hidden">
                                     <div class="flex justify-between items-start">
                                         <div class="text-xs uppercase tracking-wider"
                                             style="color:rgba(212,160,23,0.7)">
                                             <span id="card-type-display">Credit Card</span>
                                         </div>
-                                        <div id="card-brand" class="text-xs sm:text-sm font-bold tracking-widest"
-                                            style="color:var(--gold-light)">VISA</div>
+                                        <div id="card-brand"
+                                            class="text-xs sm:text-sm font-bold tracking-widest card-network-transition"
+                                            style="color:var(--gold-light)">CARD</div>
                                     </div>
                                     <div class="my-3 sm:my-4">
                                         <div class="w-10 h-8 sm:w-12 sm:h-10 mb-3 sm:mb-4">
@@ -673,8 +691,14 @@
                             <label
                                 class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Card
                                 Number</label>
-                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19"
-                                class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
+                            <div class="relative">
+                                <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19"
+                                    class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
+                                <div id="card-logo-container"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 opacity-0 transition-all duration-300 scale-75">
+                                    <!-- Card logo will be inserted here -->
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label
@@ -1477,32 +1501,234 @@
             osQuery.addListener(handleThemeChange);
         }
 
-        // ── Card display functionality ────────────────────────────────────
-        const cardContainer = document.querySelector('.card-container');
-        const nameInput = document.getElementById('name');
-        const cardNumberInput = document.getElementById('card-number');
-        const expiryInput = document.getElementById('expiry');
-        const cvvInput = document.getElementById('cvv');
+        // ── Global Card Network Detection ────────────────────────────────────
+        const CARD_NETWORKS = {
+            // Global Networks
+            visa: {
+                name: 'Visa',
+                patterns: [/^4/],
+                lengths: [13, 16, 19],
+                cvvLength: 3,
+                color: '#1A1F71',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><path fill="#1A1F71" d="M4.015 8.205h2.78l-1.75 7.59H2.265l-1.75-7.59h2.78l.27 1.48h.03c.09-.48.36-.96.81-1.48zm.81 2.79l-.51 2.79h-.03l-.51-2.79h1.05zm3.81-2.79h1.71l.9 7.59h-1.71l-.12-.66h-.03c-.24.48-.66.78-1.23.78-.42 0-.75-.12-1-.36s-.36-.57-.36-1.02c0-.81.66-1.23 1.98-1.23l.6-.03-.15-1.02h-.03c-.15.48-.42.72-.81.72-.21 0-.36-.06-.45-.18s-.12-.3-.12-.54c0-.24.06-.42.18-.54s.3-.18.54-.18c.42 0 .72.18.9.54l.27-1.44zm1.23 4.17c0-.24-.06-.42-.18-.54s-.3-.18-.54-.18c-.24 0-.42.06-.54.18s-.18.3-.18.54c0 .24.06.42.18.54s.3.18.54.18c.24 0 .42-.06.54-.18s.18-.3.18-.54zm3.81-4.17h1.71l.9 7.59h-1.71l-.12-.66h-.03c-.24.48-.66.78-1.23.78-.42 0-.75-.12-1-.36s-.36-.57-.36-1.02c0-.81.66-1.23 1.98-1.23l.6-.03-.15-1.02h-.03c-.15.48-.42.72-.81.72-.21 0-.36-.06-.45-.18s-.12-.3-.12-.54c0-.24.06-.42.18-.54s.3-.18.54-.18c.42 0 .72.18.9.54l.27-1.44zm1.23 4.17c0-.24-.06-.42-.18-.54s-.3-.18-.54-.18c-.24 0-.42.06-.54.18s-.18.3-.18.54c0 .24.06.42.18.54s.3.18.54.18c.24 0 .42-.06.54-.18s.18-.3.18-.54zm3.81-4.17h1.71l.9 7.59h-1.71l-.12-.66h-.03c-.24.48-.66.78-1.23.78-.42 0-.75-.12-1-.36s-.36-.57-.36-1.02c0-.81.66-1.23 1.98-1.23l.6-.03-.15-1.02h-.03c-.15.48-.42.72-.81.72-.21 0-.36-.06-.45-.18s-.12-.3-.12-.54c0-.24.06-.42.18-.54s.3-.18.54-.18c.42 0 .72.18.9.54l.27-1.44zm1.23 4.17c0-.24-.06-.42-.18-.54s-.3-.18-.54-.18c-.24 0-.42.06-.54.18s-.18.3-.18.54c0 .24.06.42.18.54s.3.18.54.18c.24 0 .42-.06.54-.18s.18-.3.18-.54z"/></svg>`
+            },
+            mastercard: {
+                name: 'Mastercard',
+                patterns: [/^5[1-5]/, /^2[2-7]/],
+                lengths: [16],
+                cvvLength: 3,
+                color: '#EB001B',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><circle cx="9" cy="12" r="7" fill="#EB001B"/><circle cx="15" cy="12" r="7" fill="#F79E1B"/><path fill="#FF5F00" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
+            },
+            amex: {
+                name: 'American Express',
+                patterns: [/^3[47]/],
+                lengths: [15],
+                cvvLength: 4,
+                color: '#006FCF',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#006FCF"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="10" font-weight="bold">AMEX</text></svg>`
+            },
+            discover: {
+                name: 'Discover',
+                patterns: [/^6(?:011|5)/, /^6[45]/],
+                lengths: [16, 19],
+                cvvLength: 3,
+                color: '#FF6000',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#FF6000"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">DISCOVER</text></svg>`
+            },
+            jcb: {
+                name: 'JCB',
+                patterns: [/^35(?:2[89]|[3-8])/],
+                lengths: [16, 19],
+                cvvLength: 3,
+                color: '#0E4C96',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#0E4C96"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="10" font-weight="bold">JCB</text></svg>`
+            },
+            unionpay: {
+                name: 'UnionPay',
+                patterns: [/^62/],
+                lengths: [16, 19],
+                cvvLength: 3,
+                color: '#E21836',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#E21836"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">UnionPay</text></svg>`
+            },
+            diners: {
+                name: 'Diners Club',
+                patterns: [/^3[0689]/],
+                lengths: [14, 16],
+                cvvLength: 3,
+                color: '#0079BE',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#0079BE"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="6" font-weight="bold">DINERS</text></svg>`
+            },
 
-        const nameDisplay = document.getElementById('name-display');
-        const cardNumberDisplay = document.getElementById('card-number-display');
-        const expiryDisplay = document.getElementById('expiry-display');
-        const cvvDisplay = document.getElementById('cvv-display');
-        const cardBrand = document.getElementById('card-brand');
-        let cvvLength = 3;
-        let cvvMaskTimer;
-
-        function updateCvvSettings() {
-            if (cardBrand.textContent === 'AMEX') {
-                cvvLength = 4;
-            } else {
-                cvvLength = 3;
+            // Regional Networks
+            rupay: {
+                name: 'RuPay',
+                patterns: [/^60[2-9][0-9]{3}/, /^65[0-9]{4}/, /^81[0-9]{4}/, /^82[0-9]{4}/], // Avoid 6011 (Discover)
+                lengths: [16],
+                cvvLength: 3,
+                color: '#4F2683',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#4F2683"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">RuPay</text></svg>`
+            },
+            elo: {
+                name: 'Elo',
+                patterns: [/^4011/, /^4312/, /^4389/, /^4514/, /^4576/, /^5041/, /^5067/, /^5090/, /^6277/, /^6363/],
+                lengths: [16],
+                cvvLength: 3,
+                color: '#FFC107',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#FFC107"/><text x="12" y="13" text-anchor="middle" fill="#000" font-size="10" font-weight="bold">ELO</text></svg>`
+            },
+            mir: {
+                name: 'Mir',
+                patterns: [/^220[0-4]/],
+                lengths: [16],
+                cvvLength: 3,
+                color: '#1A9F29',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#1A9F29"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="10" font-weight="bold">MIR</text></svg>`
+            },
+            cartes_bancaires: {
+                name: 'Cartes Bancaires',
+                patterns: [/^497[0-9]{3}/], // More specific CB range
+                lengths: [16],
+                cvvLength: 3,
+                color: '#3F51B5',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#3F51B5"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="6" font-weight="bold">CB</text></svg>`
+            },
+            girocard: {
+                name: 'Girocard',
+                patterns: [/^4929/, /^4930/],
+                lengths: [16],
+                cvvLength: 3,
+                color: '#005CA9',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#005CA9"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">GIROCARD</text></svg>`
+            },
+            bancontact: {
+                name: 'Bancontact',
+                patterns: [/^6703/],
+                lengths: [16],
+                cvvLength: 3,
+                color: '#005CA9',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#005CA9"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="6" font-weight="bold">BANCONTACT</text></svg>`
+            },
+            dankort: {
+                name: 'Dankort',
+                patterns: [/^5019/],
+                lengths: [16],
+                cvvLength: 3,
+                color: '#FF0000',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#FF0000"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">DANKORT</text></svg>`
+            },
+            troy: {
+                name: 'Troy',
+                patterns: [/^65/],
+                lengths: [16],
+                cvvLength: 3,
+                color: '#D52B1E',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#D52B1E"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="10" font-weight="bold">TROY</text></svg>`
+            },
+            bc_card: {
+                name: 'BC Card',
+                patterns: [/^94/],
+                lengths: [16],
+                cvvLength: 3,
+                color: '#0066CC',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#0066CC"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">BC CARD</text></svg>`
+            },
+            napas: {
+                name: 'NAPAS',
+                patterns: [/^9704/],
+                lengths: [16],
+                cvvLength: 3,
+                color: '#FF6600',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#FF6600"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">NAPAS</text></svg>`
+            },
+            meeza: {
+                name: 'Meeza',
+                patterns: [/^5078/],
+                lengths: [16],
+                cvvLength: 3,
+                color: '#1E90FF',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#1E90FF"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="10" font-weight="bold">MEEZA</text></svg>`
             }
+        };
+
+        // Card detection function - ordered by specificity (most specific first)
+        function detectCardNetwork(cardNumber) {
+            const cleanNumber = cardNumber.replace(/\s+/g, '');
+
+            // Check in order of specificity - more specific patterns first
+            const orderedNetworks = [
+                'mir', 'elo', 'girocard', 'bancontact', 'dankort', 'troy', 'bc_card',
+                'napas', 'meeza', 'cartes_bancaires', 'rupay', 'jcb', 'unionpay',
+                'diners', 'discover', 'amex', 'mastercard', 'visa'
+            ];
+
+            for (const key of orderedNetworks) {
+                const network = CARD_NETWORKS[key];
+                for (const pattern of network.patterns) {
+                    if (pattern.test(cleanNumber)) {
+                        return { ...network, key };
+                    }
+                }
+            }
+
+            return {
+                name: 'Unknown',
+                key: 'unknown',
+                cvvLength: 3,
+                color: '#6B7280',
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#6B7280"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">CARD</text></svg>`
+            };
+        }
+
+        // Update card visual styling
+        function updateCardVisuals(network) {
+            const cardVisual = document.querySelector('.card-visual-front');
+            const cardBrandElement = document.getElementById('card-brand');
+
+            // Update card background with network color
+            cardVisual.style.background = `linear-gradient(135deg, ${network.color} 0%, ${network.color}DD 100%)`;
+            cardVisual.style.border = `2px solid ${network.color}80`;
+
+            // Update brand text
+            cardBrandElement.textContent = network.name.toUpperCase();
+            cardBrandElement.style.color = '#FFFFFF';
+
+            // Update CVV settings
+            cvvLength = network.cvvLength;
             cvvInput.maxLength = cvvLength;
             cvvInput.placeholder = cvvLength === 4 ? '1234' : '123';
-            const value = cvvInput.value.slice(0, cvvLength).replace(/\D/g, '');
-            cvvInput.value = value;
-            maskCvv();
+        }
+
+        // Reset card to default state
+        function resetCardToDefault() {
+            const defaultNetwork = {
+                name: 'Card',
+                key: 'unknown',
+                cvvLength: 3,
+                color: '#D4A017', // Gold color
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#D4A017"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">CARD</text></svg>`
+            };
+
+            updateCardVisuals(defaultNetwork);
+            updateInputStyling(defaultNetwork);
+        }
+
+        // Update input field styling and logo
+        function updateInputStyling(network) {
+            const cardNumberInput = document.getElementById('card-number');
+            const cardLogoContainer = document.getElementById('card-logo-container');
+
+            // Update input border color
+            cardNumberInput.style.borderColor = network.color;
+            cardNumberInput.style.boxShadow = `0 0 0 2px ${network.color}20`;
+
+            // Update logo
+            if (cardLogoContainer) {
+                cardLogoContainer.innerHTML = network.logo;
+                cardLogoContainer.style.opacity = '1';
+                cardLogoContainer.style.transform = 'scale(1)';
+            }
         }
 
         function maskCvv() {
@@ -1545,19 +1771,24 @@
             // Update card display
             cardNumberDisplay.textContent = formattedValue || '•••• •••• •••• ••••';
 
-            // Detect card type
-            if (value.startsWith('4')) {
-                cardBrand.textContent = 'VISA';
-            } else if (/^5[1-5]/.test(value)) {
-                cardBrand.textContent = 'MASTERCARD';
-            } else if (/^3[47]/.test(value)) {
-                cardBrand.textContent = 'AMEX';
-            } else if (/^6(?:011|5)/.test(value)) {
-                cardBrand.textContent = 'DISCOVER';
+            // Detect and update card network or reset to default
+            if (value.length === 0) {
+                resetCardToDefault();
             } else {
-                cardBrand.textContent = 'CARD';
+                const network = detectCardNetwork(value);
+                updateCardVisuals(network);
+                updateInputStyling(network);
             }
-            updateCvvSettings();
+
+            // Update CVV settings based on detected network
+            const network = value.length === 0 ? { cvvLength: 3 } : detectCardNetwork(value);
+            cvvLength = network.cvvLength;
+            cvvInput.maxLength = cvvLength;
+            cvvInput.placeholder = cvvLength === 4 ? '1234' : '123';
+            const cvvValue = cvvInput.value.slice(0, cvvLength).replace(/\D/g, '');
+            cvvInput.value = cvvValue;
+            maskCvv();
+
             updateCustomerDetails();
         });
 
@@ -1843,7 +2074,7 @@
         populateSenderCountry();
         updatePrices();
         updateInstallmentAmounts();
-        updateCvvSettings();
+        resetCardToDefault(); // Initialize card to default state
         updateCustomerDetails();
     </script>
 </body>
