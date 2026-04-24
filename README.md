@@ -1,4 +1,4 @@
-# Luxury Payment Gateway
+# Payment Gateway
 
 A secure, enterprise-grade payment processing system designed for luxury establishments with PCI-DSS compliance, advanced fraud prevention, multi-currency support, and integrated wallet solutions.
 
