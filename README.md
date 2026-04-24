@@ -1,4 +1,4 @@
-# Payment Gateway
+![Payment-Gateway](https://socialify.git.ci/Nihar16/Payment-Gateway/image?custom_description=Industrial-grade+global+payment+infrastructure.%0AStripe+powered+%E2%80%A2+Multi-currency+%E2%80%A2+Wallets+%E2%80%A2+Fraud+protection.+&description=1&font=Source+Code+Pro&name=1&pattern=Circuit+Board&theme=Dark)
 
 A secure, enterprise-grade payment processing system designed for  establishments with PCI-DSS compliance, advanced fraud prevention, multi-currency support, and integrated wallet solutions.
 
