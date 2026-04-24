@@ -1,0 +1,38 @@
+service: luxury-payment-api
+configValidationMode: error
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  environment:
+    STRIPE_SECRET_KEY: ${env:STRIPE_SECRET_KEY}
+    STRIPE_WEBHOOK_SECRET: ${env:STRIPE_WEBHOOK_SECRET}
+    NODE_ENV: production
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "*"
+
+functions:
+  app:
+    handler: handler.handler
+    timeout: 29       # API Gateway hard limit is 30s
+    memorySize: 512
+    events:
+      - http:
+          path: /
+          method: any
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - Authorization
+              - stripe-signature
+            allowCrede

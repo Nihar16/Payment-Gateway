@@ -4,12 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self' https://js.stripe.com https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://fonts.googleapis.com https://fonts.gstatic.com; script-src 'self' https://js.stripe.com https://cdn.jsdelivr.net https://cdn.tailwindcss.com 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://api.stripe.com; frame-src https://js.stripe.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;">
     <title>Global Payment Gateway</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://js.stripe.com/v3/"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -253,18 +250,6 @@
             box-shadow: 0 0 0 3px var(--gold-glow);
         }
 
-        .StripeElement {
-            background: transparent;
-            border: none;
-            padding: 0;
-            min-height: 44px;
-            width: 100%;
-        }
-
-        .StripeElement--focus {
-            outline: none;
-        }
-
         /* ── Header gradient ── */
         .header-gradient {
             background: linear-gradient(135deg, #1a1200, #2a1d00, #1a1200);
@@ -436,19 +421,6 @@
                     <div class="relative">
                         <select id="currency-selector" title="Select currency"
                             class="input-gold appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
-                            <option value="USD" data-symbol="$" data-rate="1">USD - US Dollar ($)</option>
-                            <option value="EUR" data-symbol="€" data-rate="0.91">EUR - Euro (€)</option>
-                            <option value="GBP" data-symbol="£" data-rate="0.78">GBP - British Pound (£)</option>
-                            <option value="JPY" data-symbol="¥" data-rate="149.82">JPY - Japanese Yen (¥)</option>
-                            <option value="CAD" data-symbol="C$" data-rate="1.36">CAD - Canadian Dollar (C$)</option>
-                            <option value="AUD" data-symbol="A$" data-rate="1.51">AUD - Australian Dollar (A$)</option>
-                            <option value="CNY" data-symbol="¥" data-rate="7.24">CNY - Chinese Yuan (¥)</option>
-                            <option value="INR" data-symbol="₹" data-rate="83.36">INR - Indian Rupee (₹)</option>
-                            <option value="BRL" data-symbol="R$" data-rate="5.05">BRL - Brazilian Real (R$)</option>
-                            <option value="RUB" data-symbol="₽" data-rate="92.30">RUB - Russian Ruble (₽)</option>
-                            <option value="ZAR" data-symbol="R" data-rate="18.31">ZAR - South African Rand (R)</option>
-                            <option value="SGD" data-symbol="S$" data-rate="1.34">SGD - Singapore Dollar (S$)</option>
-                            <option value="MXN" data-symbol="$" data-rate="16.73">MXN - Mexican Peso ($)</option>
                         </select>
                         <div
                             class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-dark-900 dark-mode-transition">
@@ -459,12 +431,41 @@
                             </svg>
                         </div>
                     </div>
+                    <p class="mt-3 text-xs text-gray-500 dark:text-dark-700 dark-mode-transition">Choose from 235 global
+                        currency options with worldwide coverage. Rates shown are illustrative; connect to a live FX
+                        service for real-time conversion.</p>
                 </div>
 
                 <!-- Order Summary -->
                 <div class="p-4 sm:p-6">
                     <h2 class="text-base sm:text-lg md:text-xl font-semibold mb-5 dark-mode-transition"
                         style="color: var(--gold);">Order Summary</h2>
+
+                    <div id="customer-details"
+                        class="mb-5 p-4 rounded-2xl border border-gray-200 dark:border-dark-600 bg-gray-50 dark:bg-dark-300 dark-mode-transition">
+                        <div
+                            class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-gray-600 dark:text-dark-800">
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">Customer Name</p>
+                                <p id="customer-name" class="mt-1 text-sm text-gray-700 dark:text-dark-900">Guest</p>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">Payment Method</p>
+                                <p id="customer-method" class="mt-1 text-sm text-gray-700 dark:text-dark-900">Credit
+                                    Card</p>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">Currency</p>
+                                <p id="customer-currency" class="mt-1 text-sm text-gray-700 dark:text-dark-900">USD •
+                                    United States</p>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900 dark:text-white">Country / Region</p>
+                                <p id="customer-country" class="mt-1 text-sm text-gray-700 dark:text-dark-900">United
+                                    States</p>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Product List -->
                     <div class="space-y-4 mb-6">
@@ -540,10 +541,11 @@
                         class="whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium tab-active dark-mode-transition">Credit/Debit
                         Card</button>
                     <button id="tab-wallet"
-                        class="whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Mobile
+                        class="whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Digital
                         Wallets</button>
                     <button id="tab-installment"
-                        class="whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">Installments</button>
+                        class="whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">EMI
+                        Options</button>
                     <button id="tab-paypal"
                         class="whitespace-nowrap px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-500 dark:text-dark-800 hover:text-gray-700 dark:hover:text-dark-900 dark-mode-transition">PayPal</button>
                     <button id="tab-bank"
@@ -553,149 +555,141 @@
 
                 <!-- Credit/Debit Card Form -->
                 <div id="form-card" class="space-y-5 sm:space-y-6">
-                    <form id="payment-form" class="space-y-5 sm:space-y-6" novalidate>
-                        <!-- Card Type Selection -->
-                        <div class="grid grid-cols-2 gap-3 sm:gap-4 mb-5 sm:mb-6">
-                            <div>
-                                <input type="radio" id="credit-card" name="card-type" value="credit"
-                                    class="radio-card hidden" checked>
-                                <label for="credit-card"
-                                    class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
-                                    <div
-                                        class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 dark-mode-transition">
-                                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot"></div>
-                                    </div>
-                                    <div>
-                                        <span
-                                            class="block text-xs sm:text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Credit
-                                            Card</span>
-                                        <span
-                                            class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition hidden sm:block">Visa,
-                                            Mastercard, Amex, etc.</span>
-                                    </div>
-                                </label>
-                            </div>
-                            <div>
-                                <input type="radio" id="debit-card" name="card-type" value="debit"
-                                    class="radio-card hidden">
-                                <label for="debit-card"
-                                    class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
-                                    <div
-                                        class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 dark-mode-transition">
-                                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot opacity-0"></div>
-                                    </div>
-                                    <div>
-                                        <span
-                                            class="block text-xs sm:text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Debit
-                                            Card</span>
-                                        <span
-                                            class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition hidden sm:block">Visa
-                                            Debit, Maestro, etc.</span>
-                                    </div>
-                                </label>
-                            </div>
+                    <!-- Card Type Selection -->
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4 mb-5 sm:mb-6">
+                        <div>
+                            <input type="radio" id="credit-card" name="card-type" value="credit"
+                                class="radio-card hidden" checked>
+                            <label for="credit-card"
+                                class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
+                                <div
+                                    class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 dark-mode-transition">
+                                    <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot"></div>
+                                </div>
+                                <div>
+                                    <span
+                                        class="block text-xs sm:text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Credit
+                                        Card</span>
+                                    <span
+                                        class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition hidden sm:block">Visa,
+                                        Mastercard, Amex, etc.</span>
+                                </div>
+                            </label>
                         </div>
+                        <div>
+                            <input type="radio" id="debit-card" name="card-type" value="debit"
+                                class="radio-card hidden">
+                            <label for="debit-card"
+                                class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
+                                <div
+                                    class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 dark-mode-transition">
+                                    <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot opacity-0"></div>
+                                </div>
+                                <div>
+                                    <span
+                                        class="block text-xs sm:text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Debit
+                                        Card</span>
+                                    <span
+                                        class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition hidden sm:block">Visa
+                                        Debit, Maestro, etc.</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
 
-                        <!-- Card Display -->
-                        <div
-                            class="card-container h-44 sm:h-52 md:h-56 mb-5 sm:mb-6 relative max-w-xs sm:max-w-sm md:max-w-lg mx-auto">
-                            <div class="card-inner">
-                                <div class="card-front">
-                                    <div
-                                        class="card-visual-front relative rounded-xl p-4 sm:p-5 md:p-6 h-full flex flex-col justify-between text-white shadow-lg dark-mode-transition overflow-hidden">
-                                        <div class="flex justify-between items-start">
-                                            <div class="text-xs uppercase tracking-wider"
-                                                style="color:rgba(212,160,23,0.7)">
-                                                <span id="card-type-display">Credit Card</span>
-                                            </div>
-                                            <div id="card-brand" class="text-xs sm:text-sm font-bold tracking-widest"
-                                                style="color:var(--gold-light)">VISA</div>
+                    <!-- Card Display -->
+                    <div
+                        class="card-container h-44 sm:h-52 md:h-56 mb-5 sm:mb-6 relative max-w-xs sm:max-w-sm md:max-w-lg mx-auto">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div
+                                    class="card-visual-front relative rounded-xl p-4 sm:p-5 md:p-6 h-full flex flex-col justify-between text-white shadow-lg dark-mode-transition overflow-hidden">
+                                    <div class="flex justify-between items-start">
+                                        <div class="text-xs uppercase tracking-wider"
+                                            style="color:rgba(212,160,23,0.7)">
+                                            <span id="card-type-display">Credit Card</span>
                                         </div>
-                                        <div class="my-3 sm:my-4">
-                                            <div class="w-10 h-8 sm:w-12 sm:h-10 mb-3 sm:mb-4">
-                                                <svg class="w-full h-full" viewBox="0 0 48 48" fill="none"
-                                                    xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M44 12H4C2.89543 12 2 12.8954 2 14V34C2 35.1046 2.89543 36 4 36H44C45.1046 36 46 35.1046 46 34V14C46 12.8954 45.1046 12 44 12Z"
-                                                        stroke="#D4A017" stroke-width="2" />
-                                                    <path d="M2 18H46" stroke="#D4A017" stroke-width="2" />
-                                                </svg>
-                                            </div>
-                                            <div id="card-number-display"
-                                                class="font-mono tracking-widest text-base sm:text-lg md:text-2xl"
-                                                style="color:var(--gold-light)">•••• •••• •••• ••••</div>
+                                        <div id="card-brand" class="text-xs sm:text-sm font-bold tracking-widest"
+                                            style="color:var(--gold-light)">VISA</div>
+                                    </div>
+                                    <div class="my-3 sm:my-4">
+                                        <div class="w-10 h-8 sm:w-12 sm:h-10 mb-3 sm:mb-4">
+                                            <svg class="w-full h-full" viewBox="0 0 48 48" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M44 12H4C2.89543 12 2 12.8954 2 14V34C2 35.1046 2.89543 36 4 36H44C45.1046 36 46 35.1046 46 34V14C46 12.8954 45.1046 12 44 12Z"
+                                                    stroke="#D4A017" stroke-width="2" />
+                                                <path d="M2 18H46" stroke="#D4A017" stroke-width="2" />
+                                            </svg>
                                         </div>
-                                        <div class="flex justify-between items-end">
-                                            <div>
-                                                <div class="text-xs" style="color:rgba(212,160,23,0.6)">Card Holder
-                                                </div>
-                                                <div id="name-display"
-                                                    class="font-medium mt-1 text-xs sm:text-sm md:text-base text-white">
-                                                    YOUR
-                                                    NAME</div>
-                                            </div>
-                                            <div>
-                                                <div class="text-xs" style="color:rgba(212,160,23,0.6)">Expires</div>
-                                                <div id="expiry-display"
-                                                    class="font-medium mt-1 text-xs sm:text-sm md:text-base text-white">
-                                                    MM/YY</div>
-                                            </div>
+                                        <div id="card-number-display"
+                                            class="font-mono tracking-widest text-base sm:text-lg md:text-2xl"
+                                            style="color:var(--gold-light)">•••• •••• •••• ••••</div>
+                                    </div>
+                                    <div class="flex justify-between items-end">
+                                        <div>
+                                            <div class="text-xs" style="color:rgba(212,160,23,0.6)">Card Holder</div>
+                                            <div id="name-display"
+                                                class="font-medium mt-1 text-xs sm:text-sm md:text-base text-white">YOUR
+                                                NAME</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs" style="color:rgba(212,160,23,0.6)">Expires</div>
+                                            <div id="expiry-display"
+                                                class="font-medium mt-1 text-xs sm:text-sm md:text-base text-white">
+                                                MM/YY</div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-back">
-                                    <div
-                                        class="card-visual-back relative rounded-xl h-full flex flex-col text-white shadow-lg dark-mode-transition overflow-hidden">
-                                        <div class="h-10 sm:h-12 mt-5 sm:mt-6" style="background:rgba(0,0,0,0.6)"></div>
-                                        <div class="px-4 sm:px-6 py-4 flex-grow flex flex-col justify-center">
-                                            <div class="flex justify-end items-center">
-                                                <div class="text-xs mr-2" style="color:rgba(212,160,23,0.7)">CVV</div>
-                                                <div id="cvv-display"
-                                                    class="rounded px-3 py-2 w-16 sm:w-20 text-center font-mono text-base sm:text-lg tracking-widest shadow"
-                                                    style="background:rgba(212,160,23,0.15);border:1px solid rgba(212,160,23,0.3);color:var(--gold-light);letter-spacing:0.2em">
-                                                    •••</div>
-                                            </div>
+                            </div>
+                            <div class="card-back">
+                                <div
+                                    class="card-visual-back relative rounded-xl h-full flex flex-col text-white shadow-lg dark-mode-transition overflow-hidden">
+                                    <div class="h-10 sm:h-12 mt-5 sm:mt-6" style="background:rgba(0,0,0,0.6)"></div>
+                                    <div class="px-4 sm:px-6 py-4 flex-grow flex flex-col justify-center">
+                                        <div class="flex justify-end items-center">
+                                            <div class="text-xs mr-2" style="color:rgba(212,160,23,0.7)">CVV</div>
+                                            <div id="cvv-display"
+                                                class="rounded px-3 py-2 w-16 sm:w-20 text-center font-mono text-base sm:text-lg tracking-widest shadow"
+                                                style="background:rgba(212,160,23,0.15);border:1px solid rgba(212,160,23,0.3);color:var(--gold-light);letter-spacing:0.2em">
+                                                •••</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Form Fields -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                            <div class="sm:col-span-2">
-                                <label
-                                    class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Cardholder
-                                    Name</label>
-                                <input type="text" id="name" placeholder="Name on card"
-                                    class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
-                            </div>
-                            <div class="sm:col-span-2">
-                                <label
-                                    class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Card
-                                    Number</label>
-                                <div id="card-number-element"
-                                    class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
-                                </div>
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Expiry
-                                    Date</label>
-                                <div id="card-expiry-element"
-                                    class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
-                                </div>
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">CVV</label>
-                                <div id="card-cvc-element"
-                                    class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
-                                </div>
-                            </div>
+                    <!-- Form Fields -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <div class="sm:col-span-2">
+                            <label
+                                class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Cardholder
+                                Name</label>
+                            <input type="text" id="name" placeholder="Name on card"
+                                class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
                         </div>
-                        <div id="card-errors" class="text-sm text-red-600 dark:text-red-400"></div>
-                    </form>
+                        <div class="sm:col-span-2">
+                            <label
+                                class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Card
+                                Number</label>
+                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19"
+                                class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Expiry
+                                Date</label>
+                            <input type="text" id="expiry" placeholder="MM/YY" maxlength="5"
+                                class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">CVV</label>
+                            <input type="password" id="cvv" placeholder="123" maxlength="3"
+                                class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Mobile Wallets Form -->
@@ -801,10 +795,8 @@
                             <li>Scan the QR code with your mobile device</li>
                             <li>Complete the payment using your selected wallet app</li>
                         </ol>
-                        <div id="payment-request-button-element" class="mt-4 hidden"></div>
                         <div class="mt-5">
-                            <button id="wallet-fallback-button"
-                                class="btn-gold w-full px-4 py-3 rounded-md text-sm sm:text-base">Pay with Mobile
+                            <button class="btn-gold w-full px-4 py-3 rounded-md text-sm sm:text-base">Pay with Digital
                                 Wallet</button>
                         </div>
                     </div>
@@ -815,7 +807,7 @@
                     <div class="p-4 sm:p-6 rounded-lg dark-mode-transition"
                         style="background:rgba(212,160,23,0.05);border:1px solid rgba(212,160,23,0.15)">
                         <h3 class="text-sm font-semibold mb-4 dark-mode-transition" style="color:var(--gold)">Choose
-                            your installment plan</h3>
+                            your EMI plan</h3>
                         <div class="mb-6">
                             <label
                                 class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-2 dark-mode-transition">Number
@@ -946,7 +938,7 @@
                         <div class="pt-3 sm:pt-4">
                             <button id="installment-button"
                                 class="btn-gold w-full px-4 py-3 rounded-md text-sm sm:text-base">Continue with
-                                Installments</button>
+                                EMI Options</button>
                         </div>
                     </div>
                 </div>
@@ -978,28 +970,7 @@
                         <h3 class="font-semibold mb-4 text-sm sm:text-base dark-mode-transition"
                             style="color:var(--gold)">Bank Transfer Details</h3>
                         <div class="space-y-4 text-xs sm:text-sm text-gray-600 dark:text-dark-800 dark-mode-transition">
-                            <p>Use the beneficiary account below and submit your sender bank details for transfer
-                                reconciliation.</p>
-
-                            <div class="p-3 sm:p-4 rounded-md dark-mode-transition"
-                                style="background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.2)">
-                                <h4 class="font-semibold mb-2 text-gray-800 dark:text-gray-100">Beneficiary Account
-                                    (Payment Gateway)</h4>
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1 sm:gap-2 bank-grid">
-                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Bank Name:</span>
-                                    <span class="sm:col-span-2">Global Settlement Bank</span>
-                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Beneficiary:</span>
-                                    <span class="sm:col-span-2">Demo Company Ltd</span>
-                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Account Number:</span>
-                                    <span class="sm:col-span-2 break-all">001234567890</span>
-                                    <span class="font-semibold text-gray-800 dark:text-gray-200">IBAN:</span>
-                                    <span class="sm:col-span-2 break-all">GB29NWBK60161331926819</span>
-                                    <span class="font-semibold text-gray-800 dark:text-gray-200">SWIFT/BIC:</span>
-                                    <span class="sm:col-span-2">NWBKGB2L</span>
-                                    <span class="font-semibold text-gray-800 dark:text-gray-200">Reference:</span>
-                                    <span class="sm:col-span-2">ORDER-12345</span>
-                                </div>
-                            </div>
+                            <p>Enter your sender bank details to complete the transfer reconciliation.</p>
 
                             <form id="bank-transfer-form" class="space-y-4" novalidate>
                                 <h4 class="font-semibold text-gray-800 dark:text-gray-100">Your Bank Details (Sender)
@@ -1168,8 +1139,7 @@
                 </div>
                 <div class="flex justify-between text-sm sm:text-base">
                     <span class="text-gray-600 dark:text-dark-800 dark-mode-transition">Transaction ID:</span>
-                    <span id="success-transaction"
-                        class="font-medium text-gray-900 dark:text-white dark-mode-transition">TXN123456789</span>
+                    <span class="font-medium text-gray-900 dark:text-white dark-mode-transition">TXN123456789</span>
                 </div>
             </div>
             <button id="close-modal"
@@ -1180,6 +1150,283 @@
     </div>
 
     <script>
+        const currencyData = [
+            { country: 'Afghanistan', currency: 'AFN', currencyName: 'Afghani', symbol: 'AFN', rate: 1 },
+            { country: 'Albania', currency: 'ALL', currencyName: 'Lek', symbol: 'L', rate: 1 },
+            { country: 'Algeria', currency: 'DZD', currencyName: 'Algerian Dinar', symbol: 'DZD', rate: 1 },
+            { country: 'American Samoa', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Andorra', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Angola', currency: 'AOA', currencyName: 'Kwanza', symbol: 'AOA', rate: 1 },
+            { country: 'Anguilla', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Antigua and Barbuda', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Argentina', currency: 'ARS', currencyName: 'Argentine Peso', symbol: 'ARS', rate: 1 },
+            { country: 'Armenia', currency: 'AMD', currencyName: 'Armenian Dram', symbol: '֏', rate: 1 },
+            { country: 'Aruba', currency: 'AWG', currencyName: 'Aruban Florin', symbol: 'Afl', rate: 1 },
+            { country: 'Australia', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Austria', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Azerbaijan', currency: 'AZN', currencyName: 'Azerbaijan Manat', symbol: '₼', rate: 1 },
+            { country: 'Bahamas', currency: 'BSD', currencyName: 'Bahamian Dollar', symbol: '$', rate: 1 },
+            { country: 'Bahrain', currency: 'BHD', currencyName: 'Bahraini Dinar', symbol: 'ب.د', rate: 1 },
+            { country: 'Bangladesh', currency: 'BDT', currencyName: 'Taka', symbol: '৳', rate: 1 },
+            { country: 'Barbados', currency: 'BBD', currencyName: 'Barbados Dollar', symbol: 'Bds$', rate: 1 },
+            { country: 'Belarus', currency: 'BYR', currencyName: 'BYR', symbol: 'BYR', rate: 1 },
+            { country: 'Belgium', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Belize', currency: 'BZD', currencyName: 'Belize Dollar', symbol: 'BZ$', rate: 1 },
+            { country: 'Benin', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Bermuda', currency: 'BMD', currencyName: 'Bermudian Dollar', symbol: '$', rate: 1 },
+            { country: 'Bhutan', currency: 'BTN', currencyName: 'Ngultrum', symbol: 'Nu.', rate: 1 },
+            { country: 'Bolivia, Plurinational State of', currency: 'BOB', currencyName: 'Boliviano', symbol: 'BOB', rate: 1 },
+            { country: 'Bosnia and Herzegovina', currency: 'BAM', currencyName: 'Convertible Mark', symbol: 'KM', rate: 1 },
+            { country: 'Botswana', currency: 'BWP', currencyName: 'Pula', symbol: 'P', rate: 1 },
+            { country: 'Brazil', currency: 'BRL', currencyName: 'Brazilian Real', symbol: 'R$', rate: 1 },
+            { country: 'British Indian Ocean Territory', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Brunei Darussalam', currency: 'BND', currencyName: 'Brunei Dollar', symbol: 'BND', rate: 1 },
+            { country: 'Bulgaria', currency: 'BGN', currencyName: 'BGN', symbol: 'лв', rate: 1 },
+            { country: 'Burkina Faso', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Burundi', currency: 'BIF', currencyName: 'Burundi Franc', symbol: 'FBu', rate: 1 },
+            { country: 'Cabo Verde', currency: 'CVE', currencyName: 'Cabo Verde Escudo', symbol: 'CVE', rate: 1 },
+            { country: 'Cambodia', currency: 'KHR', currencyName: 'Riel', symbol: 'KHR', rate: 1 },
+            { country: 'Cameroon', currency: 'XAF', currencyName: 'CFA Franc BEAC', symbol: 'FCFA', rate: 1 },
+            { country: 'Canada', currency: 'CAD', currencyName: 'Canadian Dollar', symbol: 'C$', rate: 1 },
+            { country: 'Cayman Islands', currency: 'KYD', currencyName: 'Cayman Islands Dollar', symbol: 'KY$', rate: 1 },
+            { country: 'Central African Republic', currency: 'XAF', currencyName: 'CFA Franc BEAC', symbol: 'FCFA', rate: 1 },
+            { country: 'Chad', currency: 'XAF', currencyName: 'CFA Franc BEAC', symbol: 'FCFA', rate: 1 },
+            { country: 'Chile', currency: 'CLF', currencyName: 'Unidad de Fomento', symbol: 'CLF', rate: 1 },
+            { country: 'China', currency: 'CNY', currencyName: 'Yuan Renminbi', symbol: '¥', rate: 1 },
+            { country: 'Christmas Island', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Cocos (Keeling) Islands', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Colombia', currency: 'COP', currencyName: 'Colombian Peso', symbol: 'COP', rate: 1 },
+            { country: 'Comoros', currency: 'KMF', currencyName: 'Comorian Franc', symbol: 'KMF', rate: 1 },
+            { country: 'Congo', currency: 'XAF', currencyName: 'CFA Franc BEAC', symbol: 'FCFA', rate: 1 },
+            { country: 'Congo, The Democratic Republic of the', currency: 'CDF', currencyName: 'Congolese Franc', symbol: 'CDF', rate: 1 },
+            { country: 'Cook Islands', currency: 'NZD', currencyName: 'New Zealand Dollar', symbol: 'NZ$', rate: 1 },
+            { country: 'Costa Rica', currency: 'CRC', currencyName: 'Costa Rican Colon', symbol: '₡', rate: 1 },
+            { country: 'Croatia', currency: 'HRK', currencyName: 'HRK', symbol: 'kn', rate: 1 },
+            { country: 'Cuba', currency: 'CUC', currencyName: 'CUC', symbol: 'CUC', rate: 1 },
+            { country: 'Cyprus', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Czechia', currency: 'CZK', currencyName: 'Czech Koruna', symbol: 'Kč', rate: 1 },
+            { country: 'Côte d\'Ivoire', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Denmark', currency: 'DKK', currencyName: 'Danish Krone', symbol: 'kr', rate: 1 },
+            { country: 'Djibouti', currency: 'DJF', currencyName: 'Djibouti Franc', symbol: 'Fdj', rate: 1 },
+            { country: 'Dominica', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Dominican Republic', currency: 'DOP', currencyName: 'Dominican Peso', symbol: 'RD$', rate: 1 },
+            { country: 'Ecuador', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Egypt', currency: 'EGP', currencyName: 'Egyptian Pound', symbol: 'EGP', rate: 1 },
+            { country: 'El Salvador', currency: 'SVC', currencyName: 'El Salvador Colon', symbol: 'SVC', rate: 1 },
+            { country: 'Equatorial Guinea', currency: 'XAF', currencyName: 'CFA Franc BEAC', symbol: 'FCFA', rate: 1 },
+            { country: 'Eritrea', currency: 'ERN', currencyName: 'Nakfa', symbol: 'ERN', rate: 1 },
+            { country: 'Estonia', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Eswatini', currency: 'SZL', currencyName: 'Lilangeni', symbol: 'L', rate: 1 },
+            { country: 'Ethiopia', currency: 'ETB', currencyName: 'Ethiopian Birr', symbol: 'Br', rate: 1 },
+            { country: 'Falkland Islands (Malvinas)', currency: 'FKP', currencyName: 'Falkland Islands Pound', symbol: '£', rate: 1 },
+            { country: 'Faroe Islands', currency: 'DKK', currencyName: 'Danish Krone', symbol: 'kr', rate: 1 },
+            { country: 'Fiji', currency: 'FJD', currencyName: 'Fiji Dollar', symbol: 'FJ$', rate: 1 },
+            { country: 'Finland', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'France', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'French Guiana', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'French Polynesia', currency: 'XPF', currencyName: 'CFP Franc', symbol: 'CFP', rate: 1 },
+            { country: 'French Southern Territories', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Gabon', currency: 'XAF', currencyName: 'CFA Franc BEAC', symbol: 'FCFA', rate: 1 },
+            { country: 'Gambia', currency: 'GMD', currencyName: 'Dalasi', symbol: 'D', rate: 1 },
+            { country: 'Georgia', currency: 'GEL', currencyName: 'Lari', symbol: '₾', rate: 1 },
+            { country: 'Germany', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Ghana', currency: 'GHS', currencyName: 'Ghana Cedi', symbol: '₵', rate: 1 },
+            { country: 'Gibraltar', currency: 'GIP', currencyName: 'Gibraltar Pound', symbol: '£', rate: 1 },
+            { country: 'Greece', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Greenland', currency: 'DKK', currencyName: 'Danish Krone', symbol: 'kr', rate: 1 },
+            { country: 'Grenada', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Guadeloupe', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Guam', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Guatemala', currency: 'GTQ', currencyName: 'Quetzal', symbol: 'Q', rate: 1 },
+            { country: 'Guernsey', currency: 'GBP', currencyName: 'Pound Sterling', symbol: '£', rate: 1 },
+            { country: 'Guinea', currency: 'GNF', currencyName: 'Guinean Franc', symbol: 'GNF', rate: 1 },
+            { country: 'Guinea-Bissau', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Guyana', currency: 'GYD', currencyName: 'Guyana Dollar', symbol: 'GYD', rate: 1 },
+            { country: 'Haiti', currency: 'HTG', currencyName: 'Gourde', symbol: 'G', rate: 1 },
+            { country: 'Heard Island and McDonald Islands', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Holy See (Vatican City State)', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Honduras', currency: 'HNL', currencyName: 'Lempira', symbol: 'L', rate: 1 },
+            { country: 'Hong Kong', currency: 'HKD', currencyName: 'Hong Kong Dollar', symbol: 'HK$', rate: 1 },
+            { country: 'Hungary', currency: 'HUF', currencyName: 'Forint', symbol: 'Ft', rate: 1 },
+            { country: 'Iceland', currency: 'ISK', currencyName: 'Iceland Krona', symbol: 'ISK', rate: 1 },
+            { country: 'India', currency: 'INR', currencyName: 'Indian Rupee', symbol: '₹', rate: 1 },
+            { country: 'Indonesia', currency: 'IDR', currencyName: 'Rupiah', symbol: 'Rp', rate: 1 },
+            { country: 'Iran, Islamic Republic of', currency: 'IRR', currencyName: 'Iranian Rial', symbol: 'IRR', rate: 1 },
+            { country: 'Iraq', currency: 'IQD', currencyName: 'Iraqi Dinar', symbol: 'IQD', rate: 1 },
+            { country: 'Ireland', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Isle of Man', currency: 'GBP', currencyName: 'Pound Sterling', symbol: '£', rate: 1 },
+            { country: 'Israel', currency: 'ILS', currencyName: 'New Israeli Sheqel', symbol: '₪', rate: 1 },
+            { country: 'Italy', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Jamaica', currency: 'JMD', currencyName: 'Jamaican Dollar', symbol: 'J$', rate: 1 },
+            { country: 'Japan', currency: 'JPY', currencyName: 'Yen', symbol: '¥', rate: 1 },
+            { country: 'Jersey', currency: 'GBP', currencyName: 'Pound Sterling', symbol: '£', rate: 1 },
+            { country: 'Jordan', currency: 'JOD', currencyName: 'Jordanian Dinar', symbol: 'د.ا', rate: 1 },
+            { country: 'Kazakhstan', currency: 'KZT', currencyName: 'Tenge', symbol: '₸', rate: 1 },
+            { country: 'Kenya', currency: 'KES', currencyName: 'Kenyan Shilling', symbol: 'KSh', rate: 1 },
+            { country: 'Kiribati', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Korea, Democratic People\'s Republic of', currency: 'KPW', currencyName: 'North Korean Won', symbol: '₩', rate: 1 },
+            { country: 'Korea, Republic of', currency: 'KRW', currencyName: 'Won', symbol: '₩', rate: 1 },
+            { country: 'Kuwait', currency: 'KWD', currencyName: 'Kuwaiti Dinar', symbol: 'د.ك', rate: 1 },
+            { country: 'Kyrgyzstan', currency: 'KGS', currencyName: 'Som', symbol: 'лв', rate: 1 },
+            { country: 'Lao People\'s Democratic Republic', currency: 'LAK', currencyName: 'Lao Kip', symbol: '₭', rate: 1 },
+            { country: 'Latvia', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Lebanon', currency: 'LBP', currencyName: 'Lebanese Pound', symbol: 'LBP', rate: 1 },
+            { country: 'Lesotho', currency: 'LSL', currencyName: 'Loti', symbol: 'L', rate: 1 },
+            { country: 'Liberia', currency: 'LRD', currencyName: 'Liberian Dollar', symbol: 'L$', rate: 1 },
+            { country: 'Libya', currency: 'LYD', currencyName: 'Libyan Dinar', symbol: 'LYD', rate: 1 },
+            { country: 'Liechtenstein', currency: 'CHF', currencyName: 'Swiss Franc', symbol: 'CHF', rate: 1 },
+            { country: 'Lithuania', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Luxembourg', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Madagascar', currency: 'MGA', currencyName: 'Malagasy Ariary', symbol: 'Ar', rate: 1 },
+            { country: 'Malawi', currency: 'MWK', currencyName: 'Malawi Kwacha', symbol: 'MWK', rate: 1 },
+            { country: 'Malaysia', currency: 'MYR', currencyName: 'Malaysian Ringgit', symbol: 'RM', rate: 1 },
+            { country: 'Maldives', currency: 'MVR', currencyName: 'Rufiyaa', symbol: 'Rf', rate: 1 },
+            { country: 'Mali', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Malta', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Marshall Islands', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Martinique', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Mauritania', currency: 'MRO', currencyName: 'MRO', symbol: 'MRO', rate: 1 },
+            { country: 'Mauritius', currency: 'MUR', currencyName: 'Mauritius Rupee', symbol: '₨', rate: 1 },
+            { country: 'Mayotte', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Mexico', currency: 'MXN', currencyName: 'Mexican Peso', symbol: '$', rate: 1 },
+            { country: 'Micronesia, Federated States of', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Moldova, Republic of', currency: 'MDL', currencyName: 'Moldovan Leu', symbol: 'L', rate: 1 },
+            { country: 'Monaco', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Mongolia', currency: 'MNT', currencyName: 'Tugrik', symbol: '₮', rate: 1 },
+            { country: 'Montenegro', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Montserrat', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Morocco', currency: 'MAD', currencyName: 'Moroccan Dirham', symbol: 'د.م.', rate: 1 },
+            { country: 'Mozambique', currency: 'MZN', currencyName: 'Mozambique Metical', symbol: 'MT', rate: 1 },
+            { country: 'Myanmar', currency: 'MMK', currencyName: 'Kyat', symbol: 'MMK', rate: 1 },
+            { country: 'Namibia', currency: 'NAD', currencyName: 'Namibia Dollar', symbol: 'N$', rate: 1 },
+            { country: 'Nauru', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Nepal', currency: 'NPR', currencyName: 'Nepalese Rupee', symbol: 'Rs', rate: 1 },
+            { country: 'Netherlands', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'New Caledonia', currency: 'XPF', currencyName: 'CFP Franc', symbol: 'CFP', rate: 1 },
+            { country: 'New Zealand', currency: 'NZD', currencyName: 'New Zealand Dollar', symbol: 'NZ$', rate: 1 },
+            { country: 'Nicaragua', currency: 'NIO', currencyName: 'Cordoba Oro', symbol: 'C$', rate: 1 },
+            { country: 'Niger', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Nigeria', currency: 'NGN', currencyName: 'Naira', symbol: '₦', rate: 1 },
+            { country: 'Niue', currency: 'NZD', currencyName: 'New Zealand Dollar', symbol: 'NZ$', rate: 1 },
+            { country: 'Norfolk Island', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'North Macedonia', currency: 'MKD', currencyName: 'Denar', symbol: 'ден', rate: 1 },
+            { country: 'Northern Mariana Islands', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Norway', currency: 'NOK', currencyName: 'Norwegian Krone', symbol: 'kr', rate: 1 },
+            { country: 'Oman', currency: 'OMR', currencyName: 'Rial Omani', symbol: 'ر.ع', rate: 1 },
+            { country: 'Pakistan', currency: 'PKR', currencyName: 'Pakistan Rupee', symbol: 'Rs', rate: 1 },
+            { country: 'Palau', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Panama', currency: 'PAB', currencyName: 'Balboa', symbol: 'B/.', rate: 1 },
+            { country: 'Papua New Guinea', currency: 'PGK', currencyName: 'Kina', symbol: 'PGK', rate: 1 },
+            { country: 'Paraguay', currency: 'PYG', currencyName: 'Guarani', symbol: '₲', rate: 1 },
+            { country: 'Peru', currency: 'PEN', currencyName: 'Sol', symbol: 'PEN', rate: 1 },
+            { country: 'Philippines', currency: 'PHP', currencyName: 'Philippine Peso', symbol: '₱', rate: 1 },
+            { country: 'Pitcairn', currency: 'NZD', currencyName: 'New Zealand Dollar', symbol: 'NZ$', rate: 1 },
+            { country: 'Poland', currency: 'PLN', currencyName: 'Zloty', symbol: 'zł', rate: 1 },
+            { country: 'Portugal', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Puerto Rico', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Qatar', currency: 'QAR', currencyName: 'Qatari Rial', symbol: '﷼', rate: 1 },
+            { country: 'Romania', currency: 'RON', currencyName: 'Romanian Leu', symbol: 'lei', rate: 1 },
+            { country: 'Russian Federation', currency: 'RUB', currencyName: 'Russian Ruble', symbol: '₽', rate: 1 },
+            { country: 'Rwanda', currency: 'RWF', currencyName: 'Rwanda Franc', symbol: 'FRw', rate: 1 },
+            { country: 'Réunion', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Saint Helena, Ascension and Tristan da Cunha', currency: 'SHP', currencyName: 'Saint Helena Pound', symbol: '£', rate: 1 },
+            { country: 'Saint Kitts and Nevis', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Saint Lucia', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Saint Pierre and Miquelon', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Saint Vincent and the Grenadines', currency: 'XCD', currencyName: 'East Caribbean Dollar', symbol: 'EC$', rate: 1 },
+            { country: 'Samoa', currency: 'WST', currencyName: 'Tala', symbol: 'T', rate: 1 },
+            { country: 'San Marino', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Sao Tome and Principe', currency: 'STD', currencyName: 'STD', symbol: 'STD', rate: 1 },
+            { country: 'Saudi Arabia', currency: 'SAR', currencyName: 'Saudi Riyal', symbol: '﷼', rate: 1 },
+            { country: 'Senegal', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Serbia', currency: 'RSD', currencyName: 'Serbian Dinar', symbol: 'дин', rate: 1 },
+            { country: 'Seychelles', currency: 'SCR', currencyName: 'Seychelles Rupee', symbol: '₨', rate: 1 },
+            { country: 'Sierra Leone', currency: 'SLL', currencyName: 'SLL', symbol: 'Le', rate: 1 },
+            { country: 'Singapore', currency: 'SGD', currencyName: 'Singapore Dollar', symbol: 'S$', rate: 1 },
+            { country: 'Slovakia', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Slovenia', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Solomon Islands', currency: 'SBD', currencyName: 'Solomon Islands Dollar', symbol: 'SBD', rate: 1 },
+            { country: 'Somalia', currency: 'SOS', currencyName: 'Somali Shilling', symbol: 'Sh', rate: 1 },
+            { country: 'South Africa', currency: 'ZAR', currencyName: 'Rand', symbol: 'R', rate: 1 },
+            { country: 'South Georgia and the South Sandwich Islands', currency: 'GBP', currencyName: 'Pound Sterling', symbol: '£', rate: 1 },
+            { country: 'South Sudan', currency: 'SSP', currencyName: 'South Sudanese Pound', symbol: 'SSP', rate: 1 },
+            { country: 'Spain', currency: 'EUR', currencyName: 'Euro', symbol: '€', rate: 1 },
+            { country: 'Sri Lanka', currency: 'LKR', currencyName: 'Sri Lanka Rupee', symbol: 'Rs', rate: 1 },
+            { country: 'Sudan', currency: 'SDG', currencyName: 'Sudanese Pound', symbol: '£', rate: 1 },
+            { country: 'Suriname', currency: 'SRD', currencyName: 'Surinam Dollar', symbol: 'SRD', rate: 1 },
+            { country: 'Svalbard and Jan Mayen', currency: 'NOK', currencyName: 'Norwegian Krone', symbol: 'kr', rate: 1 },
+            { country: 'Sweden', currency: 'SEK', currencyName: 'Swedish Krona', symbol: 'kr', rate: 1 },
+            { country: 'Switzerland', currency: 'CHE', currencyName: 'WIR Euro', symbol: 'CHE', rate: 1 },
+            { country: 'Syrian Arab Republic', currency: 'SYP', currencyName: 'Syrian Pound', symbol: '£', rate: 1 },
+            { country: 'Taiwan, Province of China', currency: 'TWD', currencyName: 'New Taiwan Dollar', symbol: 'NT$', rate: 1 },
+            { country: 'Tajikistan', currency: 'TJS', currencyName: 'Somoni', symbol: 'ЅМ', rate: 1 },
+            { country: 'Tanzania, United Republic of', currency: 'TZS', currencyName: 'Tanzanian Shilling', symbol: 'TSh', rate: 1 },
+            { country: 'Thailand', currency: 'THB', currencyName: 'Baht', symbol: '฿', rate: 1 },
+            { country: 'Timor-Leste', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Togo', currency: 'XOF', currencyName: 'CFA Franc BCEAO', symbol: 'CFA', rate: 1 },
+            { country: 'Tokelau', currency: 'NZD', currencyName: 'New Zealand Dollar', symbol: 'NZ$', rate: 1 },
+            { country: 'Tonga', currency: 'TOP', currencyName: 'Pa’anga', symbol: 'T$', rate: 1 },
+            { country: 'Trinidad and Tobago', currency: 'TTD', currencyName: 'Trinidad and Tobago Dollar', symbol: 'TT$', rate: 1 },
+            { country: 'Tunisia', currency: 'TND', currencyName: 'Tunisian Dinar', symbol: 'TND', rate: 1 },
+            { country: 'Turkmenistan', currency: 'TMT', currencyName: 'Turkmenistan New Manat', symbol: 'TMT', rate: 1 },
+            { country: 'Tuvalu', currency: 'AUD', currencyName: 'Australian Dollar', symbol: 'A$', rate: 1 },
+            { country: 'Türkiye', currency: 'TRY', currencyName: 'Turkish Lira', symbol: '₺', rate: 1 },
+            { country: 'Uganda', currency: 'UGX', currencyName: 'Uganda Shilling', symbol: 'USh', rate: 1 },
+            { country: 'Ukraine', currency: 'UAH', currencyName: 'Hryvnia', symbol: '₴', rate: 1 },
+            { country: 'United Arab Emirates', currency: 'AED', currencyName: 'UAE Dirham', symbol: 'د.إ', rate: 1 },
+            { country: 'United Kingdom', currency: 'GBP', currencyName: 'Pound Sterling', symbol: '£', rate: 1 },
+            { country: 'United States', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+            { country: 'Uruguay', currency: 'UYI', currencyName: 'Uruguay Peso en Unidades Indexadas (UI)', symbol: 'UYI', rate: 1 },
+            { country: 'Uzbekistan', currency: 'UZS', currencyName: 'Uzbekistan Sum', symbol: 'лв', rate: 1 },
+            { country: 'Vanuatu', currency: 'VUV', currencyName: 'Vatu', symbol: 'VT', rate: 1 },
+            { country: 'Venezuela, Bolivarian Republic of', currency: 'VEF', currencyName: 'VEF', symbol: 'VEF', rate: 1 },
+            { country: 'Viet Nam', currency: 'VND', currencyName: 'Dong', symbol: 'VND', rate: 1 },
+            { country: 'Wallis and Futuna', currency: 'XPF', currencyName: 'CFP Franc', symbol: 'CFP', rate: 1 },
+            { country: 'Western Sahara', currency: 'MAD', currencyName: 'Moroccan Dirham', symbol: 'د.م.', rate: 1 },
+            { country: 'Yemen', currency: 'YER', currencyName: 'Yemeni Rial', symbol: 'YER', rate: 1 },
+            { country: 'Zambia', currency: 'ZMK', currencyName: 'ZMK', symbol: 'ZMK', rate: 1 },
+            { country: 'Zimbabwe', currency: 'USD', currencyName: 'US Dollar', symbol: '$', rate: 1 },
+        ];
+        function populateCurrencySelector() {
+            const select = document.getElementById('currency-selector');
+            select.innerHTML = '';
+            const addedValues = new Set();
+
+            currencyData.forEach(entry => {
+                const optionValue = `${entry.country.replace(/[^a-zA-Z0-9]/g, '')}-${entry.currency}`;
+                if (addedValues.has(optionValue)) return;
+                addedValues.add(optionValue);
+                const option = document.createElement('option');
+                option.value = optionValue;
+                option.textContent = `${entry.country} - ${entry.currency} (${entry.currencyName})`;
+                option.dataset.currency = entry.currency;
+                option.dataset.country = entry.country;
+                option.dataset.symbol = entry.symbol;
+                option.dataset.rate = entry.rate;
+                select.appendChild(option);
+            });
+
+            const defaultIndex = currencyData.findIndex(entry => entry.country === 'United States' && entry.currency === 'USD');
+            if (defaultIndex >= 0) {
+                select.selectedIndex = defaultIndex;
+            }
+        }
+
+        function populateSenderCountry() {
+            const select = document.getElementById('sender-country');
+            const added = new Set();
+            select.innerHTML = '<option value="">Select country/region</option>';
+            currencyData.forEach(entry => {
+                if (!added.has(entry.country)) {
+                    added.add(entry.country);
+                    const option = document.createElement('option');
+                    option.value = entry.country;
+                    option.textContent = entry.country;
+                    select.appendChild(option);
+                }
+            });
+        }
+
         // ── Theme Management ──────────────────────────────────────────────
         const htmlEl = document.documentElement;
         const btnLight = document.getElementById('btn-light');
@@ -1230,196 +1477,127 @@
             osQuery.addListener(handleThemeChange);
         }
 
-        // ── Card display and Stripe Elements integration ────────────────────
+        // ── Card display functionality ────────────────────────────────────
         const cardContainer = document.querySelector('.card-container');
         const nameInput = document.getElementById('name');
+        const cardNumberInput = document.getElementById('card-number');
+        const expiryInput = document.getElementById('expiry');
+        const cvvInput = document.getElementById('cvv');
+
         const nameDisplay = document.getElementById('name-display');
         const cardNumberDisplay = document.getElementById('card-number-display');
         const expiryDisplay = document.getElementById('expiry-display');
         const cvvDisplay = document.getElementById('cvv-display');
         const cardBrand = document.getElementById('card-brand');
-        const cardTypeDisplay = document.getElementById('card-type-display');
-        const paymentForm = document.getElementById('payment-form');
-        const cardErrors = document.getElementById('card-errors');
-        const walletFallbackButton = document.getElementById('wallet-fallback-button');
-        const paymentRequestButtonElement = document.getElementById('payment-request-button-element');
+        let cvvLength = 3;
+        let cvvMaskTimer;
 
-        const stripe = Stripe('pk_test_replace_with_your_publishable_key');
-        const elements = stripe.elements();
-
-        const stripeStyle = {
-            base: {
-                color: '#111827',
-                fontFamily: 'Inter, system-ui, sans-serif',
-                fontSize: '16px',
-                '::placeholder': {
-                    color: '#9ca3af',
-                },
-                iconColor: '#b8860b',
-            },
-            invalid: {
-                color: '#dc2626',
-                iconColor: '#dc2626',
-            },
-        };
-
-        const cardNumberElement = elements.create('cardNumber', {
-            style: stripeStyle,
-            showIcon: true,
-        });
-        const cardExpiryElement = elements.create('cardExpiry', { style: stripeStyle });
-        const cardCvcElement = elements.create('cardCvc', { style: stripeStyle });
-
-        cardNumberElement.mount('#card-number-element');
-        cardExpiryElement.mount('#card-expiry-element');
-        cardCvcElement.mount('#card-cvc-element');
-
-        function normalizeBrand(brand) {
-            switch (brand) {
-                case 'visa': return 'VISA';
-                case 'mastercard': return 'MASTERCARD';
-                case 'amex': return 'AMEX';
-                case 'discover': return 'DISCOVER';
-                case 'diners': return 'DINERS';
-                case 'jcb': return 'JCB';
-                default: return 'CARD';
-            }
-        }
-
-        function updateCardDisplay(brand, expiryComplete, cvcComplete) {
-            cardBrand.textContent = normalizeBrand(brand);
-            cardNumberDisplay.textContent = '•••• •••• •••• ••••';
-            expiryDisplay.textContent = expiryComplete ? 'MM/YY' : 'MM/YY';
-            cvvDisplay.textContent = cvcComplete ? (brand === 'amex' ? '••••' : '•••') : (brand === 'amex' ? '••••' : '•••');
-        }
-
-        function handleElementChange(event) {
-            if (event.brand) {
-                cardBrand.textContent = normalizeBrand(event.brand);
-            }
-
-            if (event.error) {
-                cardErrors.textContent = event.error.message;
+        function updateCvvSettings() {
+            if (cardBrand.textContent === 'AMEX') {
+                cvvLength = 4;
             } else {
-                cardErrors.textContent = '';
+                cvvLength = 3;
             }
-
-            const expiryComplete = event.elementType === 'cardExpiry' ? event.complete : cardExpiryElement._complete;
-            const cvcComplete = event.elementType === 'cardCvc' ? event.complete : cardCvcElement._complete;
-            updateCardDisplay(event.brand || cardBrand.textContent.toLowerCase(), expiryComplete, cvcComplete);
+            cvvInput.maxLength = cvvLength;
+            cvvInput.placeholder = cvvLength === 4 ? '1234' : '123';
+            const value = cvvInput.value.slice(0, cvvLength).replace(/\D/g, '');
+            cvvInput.value = value;
+            maskCvv();
         }
 
-        cardNumberElement.on('change', handleElementChange);
-        cardExpiryElement.on('change', handleElementChange);
-        cardCvcElement.on('change', handleElementChange);
+        function maskCvv() {
+            cvvInput.type = 'password';
+            const len = cvvInput.value.length;
+            cvvDisplay.textContent = len ? '•'.repeat(len) : '•'.repeat(cvvLength);
+        }
+        const cardTypeDisplay = document.getElementById('card-type-display');
 
-        cardCvcElement.on('focus', function () {
+        // Card type selection
+        const creditCardRadio = document.getElementById('credit-card');
+        const debitCardRadio = document.getElementById('debit-card');
+
+        creditCardRadio.addEventListener('change', function () {
+            if (this.checked) {
+                cardTypeDisplay.textContent = 'Credit Card';
+            }
+        });
+
+        debitCardRadio.addEventListener('change', function () {
+            if (this.checked) {
+                cardTypeDisplay.textContent = 'Debit Card';
+            }
+        });
+
+        // Format card number with spaces
+        cardNumberInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = '';
+
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+
+            e.target.value = formattedValue;
+
+            // Update card display
+            cardNumberDisplay.textContent = formattedValue || '•••• •••• •••• ••••';
+
+            // Detect card type
+            if (value.startsWith('4')) {
+                cardBrand.textContent = 'VISA';
+            } else if (/^5[1-5]/.test(value)) {
+                cardBrand.textContent = 'MASTERCARD';
+            } else if (/^3[47]/.test(value)) {
+                cardBrand.textContent = 'AMEX';
+            } else if (/^6(?:011|5)/.test(value)) {
+                cardBrand.textContent = 'DISCOVER';
+            } else {
+                cardBrand.textContent = 'CARD';
+            }
+            updateCvvSettings();
+            updateCustomerDetails();
+        });
+
+        // Format expiry date
+        expiryInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+
+            e.target.value = value;
+            expiryDisplay.textContent = value || 'MM/YY';
+        });
+
+        // Update name display
+        nameInput.addEventListener('input', function (e) {
+            nameDisplay.textContent = e.target.value || 'YOUR NAME';
+            updateCustomerDetails();
+        });
+
+        // Flip card when focusing on CVV
+        cvvInput.addEventListener('focus', function () {
             cardContainer.classList.add('flipped');
         });
-        cardCvcElement.on('blur', function () {
+
+        cvvInput.addEventListener('blur', function () {
             cardContainer.classList.remove('flipped');
         });
 
-        function setPaymentButtonState(isLoading) {
-            payButton.disabled = isLoading;
-            payButton.textContent = isLoading ? 'Processing…' : `Pay ${payButtonAmount.textContent}`;
-        }
-
-        function getSelectedCurrency() {
-            const selectedOption = currencySelector.options[currencySelector.selectedIndex];
-            return {
-                rate: parseFloat(selectedOption.dataset.rate),
-                symbol: selectedOption.dataset.symbol,
-                code: selectedOption.value,
-            };
-        }
-
-        function getTotalAmountCents() {
-            const selectedCurrency = getSelectedCurrency();
-            const baseTotal = parseFloat(totalPrice.dataset.amount);
-            return Math.round(baseTotal * selectedCurrency.rate * 100);
-        }
-
-        async function createPaymentIntent() {
-            const selectedCurrency = getSelectedCurrency();
-            const response = await fetch('/create-payment-intent', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    amount: getTotalAmountCents(),
-                    currency: selectedCurrency.code,
-                    description: 'Premium Product purchase',
-                    metadata: {
-                        order_currency: selectedCurrency.code,
-                        order_amount: totalPrice.dataset.amount,
-                    },
-                }),
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || 'Unable to create payment intent.');
-            }
-
-            return response.json();
-        }
-
-        async function handleCardPayment(event) {
-            event.preventDefault();
-            const customerName = nameInput.value.trim();
-
-            if (!customerName) {
-                cardErrors.textContent = 'Please enter the cardholder name.';
-                nameInput.focus();
-                return;
-            }
-
-            setPaymentButtonState(true);
-
-            try {
-                const { clientSecret } = await createPaymentIntent();
-
-                const result = await stripe.confirmCardPayment(clientSecret, {
-                    payment_method: {
-                        card: cardNumberElement,
-                        billing_details: {
-                            name: customerName,
-                        },
-                    },
-                    setup_future_usage: 'off_session',
-                });
-
-                if (result.error) {
-                    cardErrors.textContent = result.error.message;
-                    setPaymentButtonState(false);
-                    return;
-                }
-
-                if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
-                    successMethod.textContent = cardTypeDisplay.textContent;
-                    successModal.classList.remove('hidden');
-                    successAmount.textContent = `${getSelectedCurrency().symbol}${(getTotalAmountCents() / 100).toFixed(2)}`;
-                    successCurrency.textContent = getSelectedCurrency().code;
-                    document.getElementById('success-method').textContent = 'Credit Card';
-                    document.getElementById('success-transaction').textContent = result.paymentIntent.id || 'TXN123456789';
-                }
-            } catch (error) {
-                cardErrors.textContent = error.message;
-            } finally {
-                setPaymentButtonState(false);
-            }
-        }
-
-        payButton.addEventListener('click', handleCardPayment);
-
-        walletFallbackButton.addEventListener('click', function (event) {
-            event.preventDefault();
-            alert('Mobile wallet checkout is available with Stripe Payment Request Button when supported. Deploy this page on HTTPS and configure wallet payment support on your backend.');
+        cvvInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '').slice(0, cvvLength);
+            e.target.value = value;
+            cvvInput.type = 'text';
+            cvvDisplay.textContent = value || '•'.repeat(cvvLength);
+            clearTimeout(cvvMaskTimer);
+            cvvMaskTimer = setTimeout(maskCvv, 1000);
         });
 
-        updateCardDisplay('card', false, false);
+        cvvInput.addEventListener('blur', maskCvv);
 
         // ── Tab switching ─────────────────────────────────────────────────
         const tabCard = document.getElementById('tab-card');
@@ -1453,6 +1631,7 @@
             tab.classList.add('tab-active');
             tab.classList.remove('text-gray-500', 'dark:text-dark-800');
             if (showPayBtn) cardPaymentButton.classList.remove('hidden');
+            updateCustomerDetails();
         }
 
         tabCard.addEventListener('click', () => activateTab(tabCard, formCard, true));
@@ -1469,12 +1648,39 @@
         const successAmount = document.getElementById('success-amount');
         const successCurrency = document.getElementById('success-currency');
         const successMethod = document.getElementById('success-method');
+        const customerName = document.getElementById('customer-name');
+        const customerMethod = document.getElementById('customer-method');
+        const customerCurrency = document.getElementById('customer-currency');
+        const customerCountry = document.getElementById('customer-country');
+        const senderNameInput = document.getElementById('sender-name');
+        const senderCountryInput = document.getElementById('sender-country');
+
+        senderNameInput?.addEventListener('input', updateCustomerDetails);
+        senderCountryInput?.addEventListener('change', updateCustomerDetails);
+
+        function updateCustomerDetails() {
+            const activeCountry = formBank.classList.contains('hidden')
+                ? currencySelector.options[currencySelector.selectedIndex]?.dataset.country || 'United States'
+                : senderCountryInput.value || currencySelector.options[currencySelector.selectedIndex]?.dataset.country || 'United States';
+            const activeName = formBank.classList.contains('hidden')
+                ? nameInput.value.trim() || 'Guest'
+                : senderNameInput.value.trim() || nameInput.value.trim() || 'Guest';
+            const activeMethod = document.querySelector('.tab-active')?.textContent.trim() || 'Credit Card';
+            const selectedCurrency = currencySelector.options[currencySelector.selectedIndex];
+            const currencyCode = selectedCurrency?.dataset.currency || 'USD';
+
+            customerName.textContent = activeName;
+            customerMethod.textContent = activeMethod;
+            customerCurrency.textContent = `${currencyCode} • ${selectedCurrency?.dataset.country || 'United States'}`;
+            customerCountry.textContent = activeCountry;
+        }
 
         function updatePrices() {
             const selectedOption = currencySelector.options[currencySelector.selectedIndex];
             const rate = parseFloat(selectedOption.dataset.rate);
             const symbol = selectedOption.dataset.symbol;
-            const code = selectedOption.value;
+            const code = selectedOption.dataset.currency;
+            const country = selectedOption.dataset.country;
 
             priceItems.forEach(item => {
                 const baseAmount = parseFloat(item.dataset.amount);
@@ -1489,13 +1695,19 @@
 
             // Update success modal
             successAmount.textContent = `${symbol}${convertedTotal}`;
-            successCurrency.textContent = code;
+            successCurrency.textContent = `${code} (${country})`;
+
+            // Update live customer details
+            updateCustomerDetails();
 
             // Update installment amounts
             updateInstallmentAmounts();
         }
 
-        currencySelector.addEventListener('change', updatePrices);
+        currencySelector.addEventListener('change', () => {
+            updatePrices();
+            updateCustomerDetails();
+        });
 
         // Installment slider functionality
         const installmentSlider = document.getElementById('installment-slider');
@@ -1540,7 +1752,7 @@
         installmentButton.addEventListener('click', function () {
             const provider = document.querySelector('input[name="installment-provider"]:checked').value;
             const months = installmentSlider.value;
-            successMethod.textContent = `Installments (${provider}, ${months} months)`;
+            successMethod.textContent = `EMI Options (${provider}, ${months} months)`;
             successModal.classList.remove('hidden');
         });
 
@@ -1627,9 +1839,12 @@
         });
 
         // Initialize
+        populateCurrencySelector();
+        populateSenderCountry();
         updatePrices();
         updateInstallmentAmounts();
         updateCvvSettings();
+        updateCustomerDetails();
     </script>
 </body>
 
