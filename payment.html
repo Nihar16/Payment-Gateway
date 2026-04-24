@@ -1736,6 +1736,19 @@
             const len = cvvInput.value.length;
             cvvDisplay.textContent = len ? '•'.repeat(len) : '•'.repeat(cvvLength);
         }
+
+        // DOM bindings for the card form
+        const cardNumberInput = document.getElementById('card-number');
+        const cardNumberDisplay = document.getElementById('card-number-display');
+        const expiryInput = document.getElementById('expiry');
+        const expiryDisplay = document.getElementById('expiry-display');
+        const nameInput = document.getElementById('name');
+        const nameDisplay = document.getElementById('name-display');
+        const cvvInput = document.getElementById('cvv');
+        const cvvDisplay = document.getElementById('cvv-display');
+        const cardContainer = document.querySelector('.card-container');
+        let cvvLength = 3;
+        let cvvMaskTimer;
         const cardTypeDisplay = document.getElementById('card-type-display');
 
         // Card type selection
