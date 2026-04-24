@@ -1,6 +1,6 @@
 # Payment Gateway
 
-A secure, enterprise-grade payment processing system designed for luxury establishments with PCI-DSS compliance, advanced fraud prevention, multi-currency support, and integrated wallet solutions.
+A secure, enterprise-grade payment processing system designed for  establishments with PCI-DSS compliance, advanced fraud prevention, multi-currency support, and integrated wallet solutions.
 
 **[Full Architecture Documentation & API Guide Below]**
 
