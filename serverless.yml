@@ -23,33 +23,20 @@ provider:
 functions:
   app:
     handler: handler.handler
-    timeout: 29       # API Gateway hard limit is 30s
-    memorySize: 512
     events:
       - http:
           path: /
           method: any
-          cors:
-            origin: "*"
-            headers:
-              - Content-Type
-              - Authorization
-              - stripe-signature
-            allowCredentials: false
+          cors: true
       - http:
           path: /{proxy+}
           method: any
-          cors:
-            origin: "*"
-            headers:
-              - Content-Type
-              - Authorization
-              - stripe-signature
-            allowCredentials: false
+          cors: true
 
 plugins:
   - serverless-offline
 
 custom:
   serverless-offline:
+    ignoreValidationErrors: true
     httpPort: 3000
