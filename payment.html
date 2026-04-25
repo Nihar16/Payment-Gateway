@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Payment Gateway</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -42,8 +40,19 @@
             }
         }
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --gold: #D4A017;
+            --gold-light: #FFD33A;
+            --gold-dark: #B8860B;
+            --gold-glow: rgba(212, 160, 23, 0.3);
+            --surface-light: #FFFFFF;
+            --text-light: #111827;
+            --text-dark: #F9FAFB;
+        }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -193,10 +202,39 @@
         /* ── Gold radio dot ── */
         .radio-dot {
             background: var(--gold);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: block;
         }
 
         .dark .radio-dot {
             background: var(--gold-light);
+        }
+
+        /* Radio container ring */
+        .radio-ring {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #9CA3AF;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: border-color 0.2s;
+        }
+
+        .dark .radio-ring {
+            border-color: #555555;
+        }
+
+        .radio-card:checked+label .radio-ring {
+            border-color: var(--gold) !important;
+        }
+
+        .dark .radio-card:checked+label .radio-ring {
+            border-color: var(--gold-light) !important;
         }
 
         /* ── Installment slider ── */
@@ -204,41 +242,48 @@
             -webkit-appearance: none;
             appearance: none;
             width: 100%;
-            height: 6px;
-            background: #E5E7EB;
-            border-radius: 3px;
+            height: 8px;
+            background: linear-gradient(to right, var(--gold) 0%, var(--gold) var(--slider-pct, 0%), #E5E7EB var(--slider-pct, 0%), #E5E7EB 100%);
+            border-radius: 4px;
             outline: none;
         }
 
         .dark .installment-slider {
-            background: #2a2a2a;
+            background: linear-gradient(to right, var(--gold-light) 0%, var(--gold-light) var(--slider-pct, 0%), #3a3a3a var(--slider-pct, 0%), #3a3a3a 100%);
         }
 
         .installment-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             background: var(--gold);
             border-radius: 50%;
             cursor: pointer;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 2px var(--gold), 0 2px 6px rgba(0, 0, 0, 0.25);
         }
 
         .dark .installment-slider::-webkit-slider-thumb {
             background: var(--gold-light);
+            border-color: #141414;
+            box-shadow: 0 0 0 2px var(--gold-light), 0 2px 8px rgba(0, 0, 0, 0.5);
         }
 
         .installment-slider::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
             background: var(--gold);
             border-radius: 50%;
             cursor: pointer;
-            border: none;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 2px var(--gold);
         }
 
         .dark .installment-slider::-moz-range-thumb {
             background: var(--gold-light);
+            border-color: #141414;
+            box-shadow: 0 0 0 2px var(--gold-light);
         }
 
         /* ── Gold buttons ── */
@@ -347,7 +392,130 @@
             border-color: rgba(212, 160, 23, 0.15);
         }
 
-        /* ── Mobile responsive tweaks ── */
+        /* ── Light mode form elements ── */
+        html:not(.dark) .input-gold,
+        html:not(.dark) select.input-gold {
+            background-color: #ffffff;
+            color: #111827;
+            border-color: #D1D5DB;
+        }
+
+        html:not(.dark) .input-gold::placeholder {
+            color: #9CA3AF;
+        }
+
+        /* ── Dark mode form elements ── */
+        .dark .input-gold,
+        .dark select.input-gold {
+            background-color: #1f1f1f !important;
+            color: #e5e7eb !important;
+            border-color: #3a3a3a !important;
+        }
+
+        .dark .input-gold::placeholder {
+            color: #6b7280 !important;
+        }
+
+        .dark .input-gold:focus,
+        .dark select.input-gold:focus {
+            border-color: var(--gold-light) !important;
+            box-shadow: 0 0 0 3px rgba(255, 211, 58, 0.2) !important;
+        }
+
+        /* ── Dark mode select arrow fix ── */
+        .dark select.input-gold option {
+            background-color: #1f1f1f;
+            color: #e5e7eb;
+        }
+
+        /* ── Dark mode label text ── */
+        .dark label.block,
+        .dark label {
+            color: #cccccc;
+        }
+
+        /* ── Dark mode section headings ── */
+        .dark h3,
+        .dark h4 {
+            color: #e5e7eb;
+        }
+
+        /* ── Dark mode card/panel backgrounds ── */
+        .dark #customer-details {
+            background-color: #141414 !important;
+            border-color: #3a3a3a !important;
+        }
+
+        /* ── Light mode panel backgrounds ── */
+        html:not(.dark) #customer-details {
+            background-color: #f9fafb;
+            border-color: #e5e7eb;
+        }
+
+        /* ── Dark mode order summary text ── */
+        .dark .text-gray-600 {
+            color: #9CA3AF !important;
+        }
+
+        .dark .text-gray-500 {
+            color: #6B7280 !important;
+        }
+
+        .dark .text-gray-700 {
+            color: #D1D5DB !important;
+        }
+
+        .dark .text-gray-900 {
+            color: #F9FAFB !important;
+        }
+
+        /* ── Light mode text ── */
+        html:not(.dark) .text-gray-900 {
+            color: #111827;
+        }
+
+        html:not(.dark) .text-gray-700 {
+            color: #374151;
+        }
+
+        html:not(.dark) .text-gray-600 {
+            color: #4B5563;
+        }
+
+        html:not(.dark) .text-gray-500 {
+            color: #6B7280;
+        }
+
+        /* ── Autofill override for dark mode ── */
+        .dark input:-webkit-autofill,
+        .dark input:-webkit-autofill:hover,
+        .dark input:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0px 1000px #1f1f1f inset !important;
+            -webkit-text-fill-color: #e5e7eb !important;
+            border-color: #3a3a3a !important;
+        }
+
+        /* ── Dark mode warning / info box text ── */
+        .dark .text-gray-700 {
+            color: #D1D5DB !important;
+        }
+
+        .dark .text-gray-800 {
+            color: #E5E7EB !important;
+        }
+
+        .dark .dark\:text-gray-300 {
+            color: #D1D5DB !important;
+        }
+
+        /* ── Light mode - ensure inputs have good contrast ── */
+        html:not(.dark) input[type="text"],
+        html:not(.dark) input[type="password"],
+        html:not(.dark) select {
+            background-color: #ffffff;
+            color: #111827;
+        }
+
         @media (max-width: 640px) {
             .payment-tabs button {
                 padding: 8px 10px;
@@ -579,8 +747,7 @@
                                 class="radio-card hidden" checked>
                             <label for="credit-card"
                                 class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
-                                <div
-                                    class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 dark-mode-transition">
+                                <div class="radio-ring mr-2 sm:mr-3">
                                     <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot"></div>
                                 </div>
                                 <div>
@@ -598,8 +765,7 @@
                                 class="radio-card hidden">
                             <label for="debit-card"
                                 class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
-                                <div
-                                    class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-2 sm:mr-3 flex-shrink-0 dark-mode-transition">
+                                <div class="radio-ring mr-2 sm:mr-3">
                                     <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot opacity-0"></div>
                                 </div>
                                 <div>
@@ -830,7 +996,8 @@
                 <div id="form-installment" class="hidden space-y-5 sm:space-y-6">
                     <div class="p-4 sm:p-6 rounded-lg dark-mode-transition"
                         style="background:rgba(212,160,23,0.05);border:1px solid rgba(212,160,23,0.15)">
-                        <h3 class="text-sm font-semibold mb-4 dark-mode-transition" style="color:var(--gold)">Choose
+                        <h3 class="text-sm font-semibold mb-4 dark-mode-transition text-gray-900 dark:text-white"
+                            style="color:var(--gold)">Choose
                             your EMI plan</h3>
                         <div class="mb-6">
                             <label
@@ -881,9 +1048,8 @@
                                     class="radio-card hidden" checked>
                                 <label for="klarna"
                                     class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
-                                    <div
-                                        class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-3 flex-shrink-0 dark-mode-transition">
-                                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot"></div>
+                                    <div class="radio-ring mr-3">
+                                        <div class="w-3 h-3 rounded-full radio-dot"></div>
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <span
@@ -913,9 +1079,8 @@
                                     class="radio-card hidden">
                                 <label for="affirm"
                                     class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
-                                    <div
-                                        class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-3 flex-shrink-0 dark-mode-transition">
-                                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot opacity-0"></div>
+                                    <div class="radio-ring mr-3">
+                                        <div class="w-3 h-3 rounded-full radio-dot opacity-0"></div>
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <span
@@ -939,9 +1104,8 @@
                                     class="radio-card hidden">
                                 <label for="afterpay"
                                     class="flex items-center p-3 sm:p-4 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition">
-                                    <div
-                                        class="w-5 h-5 sm:w-6 sm:h-6 border border-gray-300 dark:border-dark-600 rounded-full flex items-center justify-center mr-3 flex-shrink-0 dark-mode-transition">
-                                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full radio-dot opacity-0"></div>
+                                    <div class="radio-ring mr-3">
+                                        <div class="w-3 h-3 rounded-full radio-dot opacity-0"></div>
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <span
@@ -1514,11 +1678,11 @@
             },
             mastercard: {
                 name: 'Mastercard',
-                patterns: [/^5[1-5]/, /^2[2-7]/],
+                patterns: [/^5[1-5]/, /^(2221|222[2-9]|22[3-9]\d|2[3-6]\d{2}|27[01]\d|2720)/],
                 lengths: [16],
                 cvvLength: 3,
                 color: '#EB001B',
-                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><circle cx="9" cy="12" r="7" fill="#EB001B"/><circle cx="15" cy="12" r="7" fill="#F79E1B"/><path fill="#FF5F00" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`
+                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><circle cx="9" cy="12" r="7" fill="#EB001B"/><circle cx="15" cy="12" r="7" fill="#F79E1B"/><path fill="#FF5F00" d="M12 6.8a7 7 0 0 1 0 10.4A7 7 0 0 1 12 6.8z"/></svg>`
             },
             amex: {
                 name: 'American Express',
@@ -1620,7 +1784,7 @@
             },
             troy: {
                 name: 'Troy',
-                patterns: [/^65/],
+                patterns: [/^65[0-9]{4}/],
                 lengths: [16],
                 cvvLength: 3,
                 color: '#D52B1E',
@@ -1658,8 +1822,8 @@
 
             // Check in order of specificity - more specific patterns first
             const orderedNetworks = [
-                'mir', 'elo', 'girocard', 'bancontact', 'dankort', 'troy', 'bc_card',
-                'napas', 'meeza', 'cartes_bancaires', 'rupay', 'jcb', 'unionpay',
+                'mir', 'elo', 'girocard', 'bancontact', 'dankort', 'rupay', 'troy', 'bc_card',
+                'napas', 'meeza', 'cartes_bancaires', 'jcb', 'unionpay',
                 'diners', 'discover', 'amex', 'mastercard', 'visa'
             ];
 
@@ -1959,6 +2123,14 @@
         const installmentAmount = document.getElementById('installment-amount');
         const installmentTotal = document.getElementById('installment-total');
 
+        function updateSliderFill(slider) {
+            const min = parseFloat(slider.min);
+            const max = parseFloat(slider.max);
+            const val = parseFloat(slider.value);
+            const pct = ((val - min) / (max - min)) * 100;
+            slider.style.setProperty('--slider-pct', pct + '%');
+        }
+
         function updateInstallmentAmounts() {
             const months = parseInt(installmentSlider.value);
             const selectedOption = currencySelector.options[currencySelector.selectedIndex];
@@ -1972,9 +2144,13 @@
             installmentMonths.textContent = `${months} monthly payments`;
             installmentAmount.textContent = `${symbol}${monthlyPayment}`;
             installmentTotal.textContent = `${symbol}${convertedTotal}`;
+            updateSliderFill(installmentSlider);
         }
 
-        installmentSlider.addEventListener('input', updateInstallmentAmounts);
+        installmentSlider.addEventListener('input', () => {
+            updateInstallmentAmounts();
+            updateSliderFill(installmentSlider);
+        });
 
         // Payment buttons
         const payButton = document.getElementById('pay-button');
@@ -2031,21 +2207,21 @@
             successModal.classList.add('hidden');
         });
 
+        function setRadioDot(label, visible) {
+            const dot = label.querySelector('.radio-dot');
+            if (dot) dot.classList.toggle('opacity-0', !visible);
+            const ring = label.querySelector('.radio-ring');
+            if (ring) ring.style.borderColor = visible ? 'var(--gold)' : '';
+        }
+
         // Mobile wallet radio buttons
         const walletRadios = document.querySelectorAll('input[name="wallet-type"]');
         walletRadios.forEach(radio => {
             radio.addEventListener('change', function () {
-                if (this.checked) {
-                    document.querySelectorAll('label[for^="apple-pay"], label[for^="google-pay"], label[for^="samsung-pay"]').forEach(label => {
-                        const radioInput = document.getElementById(label.getAttribute('for'));
-                        const radioDiv = label.querySelector('div:first-child');
-                        if (radioInput.checked) {
-                            radioDiv.querySelector('div').classList.remove('opacity-0');
-                        } else {
-                            radioDiv.querySelector('div').classList.add('opacity-0');
-                        }
-                    });
-                }
+                walletRadios.forEach(r => {
+                    const lbl = document.querySelector(`label[for="${r.id}"]`);
+                    if (lbl) setRadioDot(lbl, r.checked);
+                });
             });
         });
 
@@ -2053,32 +2229,25 @@
         const installmentRadios = document.querySelectorAll('input[name="installment-provider"]');
         installmentRadios.forEach(radio => {
             radio.addEventListener('change', function () {
-                if (this.checked) {
-                    document.querySelectorAll('label[for^="klarna"], label[for^="affirm"], label[for^="afterpay"]').forEach(label => {
-                        const radioInput = document.getElementById(label.getAttribute('for'));
-                        const radioDiv = label.querySelector('div:first-child');
-                        if (radioInput.checked) {
-                            radioDiv.querySelector('div').classList.remove('opacity-0');
-                        } else {
-                            radioDiv.querySelector('div').classList.add('opacity-0');
-                        }
-                    });
-                }
+                installmentRadios.forEach(r => {
+                    const lbl = document.querySelector(`label[for="${r.id}"]`);
+                    if (lbl) setRadioDot(lbl, r.checked);
+                });
             });
         });
 
         // Card type radio buttons
         creditCardRadio.addEventListener('change', function () {
             if (this.checked) {
-                document.querySelector('label[for="credit-card"] div:first-child div').classList.remove('opacity-0');
-                document.querySelector('label[for="debit-card"] div:first-child div').classList.add('opacity-0');
+                setRadioDot(document.querySelector('label[for="credit-card"]'), true);
+                setRadioDot(document.querySelector('label[for="debit-card"]'), false);
             }
         });
 
         debitCardRadio.addEventListener('change', function () {
             if (this.checked) {
-                document.querySelector('label[for="debit-card"] div:first-child div').classList.remove('opacity-0');
-                document.querySelector('label[for="credit-card"] div:first-child div').classList.add('opacity-0');
+                setRadioDot(document.querySelector('label[for="debit-card"]'), true);
+                setRadioDot(document.querySelector('label[for="credit-card"]'), false);
             }
         });
 
@@ -2087,6 +2256,7 @@
         populateSenderCountry();
         updatePrices();
         updateInstallmentAmounts();
+        updateSliderFill(installmentSlider);
         resetCardToDefault(); // Initialize card to default state
         updateCustomerDetails();
     </script>
