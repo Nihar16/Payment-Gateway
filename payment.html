@@ -392,162 +392,305 @@
             border-color: rgba(212, 160, 23, 0.15);
         }
 
-        /* ── Light mode form elements ── */
-        html:not(.dark) .input-gold,
-        html:not(.dark) select.input-gold {
-            background-color: #ffffff;
-            color: #111827;
-            border-color: #D1D5DB;
+        /* ════════════════════════════════════════════
+           CSS THEME VARIABLES — single source of truth
+           ════════════════════════════════════════════ */
+        html.light {
+            --bg-page: #F3F4F6;
+            --bg-shell: #ffffff;
+            --bg-panel: #ffffff;
+            --bg-subpanel: #F9FAFB;
+            --bg-input: #ffffff;
+            --bg-input-hover: #F9FAFB;
+            --bg-tinted: rgba(212, 160, 23, 0.08);
+            --bg-radio-sel: #FFFBEA;
+            --border-main: #E5E7EB;
+            --border-input: #D1D5DB;
+            --text-primary: #111827;
+            --text-secondary: #374151;
+            --text-muted: #6B7280;
+            --text-placeholder: #9CA3AF;
         }
 
-        html:not(.dark) .input-gold::placeholder {
-            color: #9CA3AF;
+        html.dark {
+            --bg-page: #000000;
+            --bg-shell: #000000;
+            --bg-panel: #000000;
+            --bg-subpanel: #141414;
+            --bg-input: #1f1f1f;
+            --bg-input-hover: #2a2a2a;
+            --bg-tinted: rgba(212, 160, 23, 0.05);
+            --bg-radio-sel: #1f1a00;
+            --border-main: #3a3a3a;
+            --border-input: #3a3a3a;
+            --text-primary: #F9FAFB;
+            --text-secondary: #E5E7EB;
+            --text-muted: #9CA3AF;
+            --text-placeholder: #6B7280;
         }
 
-        /* ── Dark mode form elements ── */
-        .dark .input-gold,
-        .dark select.input-gold {
-            background-color: #1f1f1f !important;
-            color: #e5e7eb !important;
-            border-color: #3a3a3a !important;
+        /* ── Page & shell ── */
+        body {
+            background-color: var(--bg-page) !important;
+            color: var(--text-primary) !important;
         }
 
-        .dark .input-gold::placeholder {
-            color: #6b7280 !important;
+        .payment-shell {
+            background-color: var(--bg-shell) !important;
+            border-color: rgba(212, 160, 23, 0.2) !important;
         }
 
-        .dark .input-gold:focus,
-        .dark select.input-gold:focus {
+        html.light .payment-shell {
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ── Column panels ── */
+        .payment-main>div {
+            background-color: var(--bg-panel) !important;
+        }
+
+        /* ── Customer details card ── */
+        #customer-details {
+            background-color: var(--bg-subpanel) !important;
+            border-color: var(--border-main) !important;
+        }
+
+        /* ── All text ── */
+        .text-white,
+        .text-gray-900,
+        h2,
+        h3,
+        h4 {
+            color: var(--text-primary) !important;
+        }
+
+        /* Gold headings keep gold colour — don't override inline style */
+        [style*="color: var(--gold)"],
+        [style*="color:var(--gold)"] {
+            color: var(--gold) !important;
+        }
+
+        .text-gray-800,
+        .text-gray-700,
+        label,
+        label.block {
+            color: var(--text-secondary) !important;
+        }
+
+        .text-gray-600,
+        .text-gray-500 {
+            color: var(--text-muted) !important;
+        }
+
+        /* ── Input fields & selects ── */
+        .input-gold,
+        select.input-gold {
+            background-color: var(--bg-input) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-input) !important;
+        }
+
+        .input-gold::placeholder {
+            color: var(--text-placeholder) !important;
+        }
+
+        select.input-gold option {
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+        }
+
+        .input-gold:focus,
+        select.input-gold:focus {
+            border-color: var(--gold) !important;
+            box-shadow: 0 0 0 3px var(--gold-glow) !important;
+        }
+
+        html.dark .input-gold:focus,
+        html.dark select.input-gold:focus {
             border-color: var(--gold-light) !important;
-            box-shadow: 0 0 0 3px rgba(255, 211, 58, 0.2) !important;
         }
 
-        /* ── Dark mode select arrow fix ── */
-        .dark select.input-gold option {
-            background-color: #1f1f1f;
-            color: #e5e7eb;
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0px 1000px var(--bg-input) inset !important;
+            -webkit-text-fill-color: var(--text-primary) !important;
+            border-color: var(--border-input) !important;
         }
 
-        /* ── Dark mode label text ── */
-        .dark label.block,
-        .dark label {
-            color: #cccccc;
+        /* ── Tabs ── */
+        .payment-tabs {
+            background-color: transparent;
         }
 
-        /* ── Dark mode section headings ── */
-        .dark h3,
-        .dark h4 {
-            color: #e5e7eb;
+        .payment-tabs button:not(.tab-active) {
+            color: var(--text-muted) !important;
         }
 
-        /* ── Dark mode card/panel backgrounds ── */
-        .dark #customer-details {
-            background-color: #141414 !important;
-            border-color: #3a3a3a !important;
+        .payment-tabs button:not(.tab-active):hover {
+            color: var(--text-primary) !important;
         }
 
-        /* ── Light mode panel backgrounds ── */
-        html:not(.dark) #customer-details {
-            background-color: #f9fafb;
-            border-color: #e5e7eb;
+        /* ── Radio card labels ── */
+        label[for="credit-card"],
+        label[for="debit-card"],
+        label[for="apple-pay"],
+        label[for="google-pay"],
+        label[for="samsung-pay"],
+        label[for="klarna"],
+        label[for="affirm"],
+        label[for="afterpay"],
+        .wallet-label {
+            background-color: var(--bg-panel) !important;
+            border-color: var(--border-input) !important;
         }
 
-        /* ── Dark mode order summary text ── */
-        .dark .text-gray-600 {
-            color: #9CA3AF !important;
+        label[for="credit-card"]:hover,
+        label[for="debit-card"]:hover,
+        label[for="apple-pay"]:hover,
+        label[for="google-pay"]:hover,
+        label[for="samsung-pay"]:hover,
+        label[for="klarna"]:hover,
+        label[for="affirm"]:hover,
+        label[for="afterpay"]:hover,
+        .wallet-label:hover {
+            background-color: var(--bg-input-hover) !important;
         }
 
-        .dark .text-gray-500 {
-            color: #6B7280 !important;
+        .radio-card:checked+label {
+            background-color: var(--bg-radio-sel) !important;
+            border-color: var(--gold) !important;
         }
 
-        .dark .text-gray-700 {
-            color: #D1D5DB !important;
+        /* ── Info / tinted boxes ── */
+        .secure-badge,
+        [style*="background:rgba(212,160,23,0.05)"],
+        [style*="background: rgba(212,160,23,0.05)"],
+        [style*="background:rgba(212,160,23,0.08)"],
+        [style*="background: rgba(212,160,23,0.08)"] {
+            background-color: var(--bg-tinted) !important;
         }
 
-        .dark .text-gray-900 {
-            color: #F9FAFB !important;
+        /* ── Installment slider track ── */
+        .installment-slider {
+            background: linear-gradient(to right,
+                    var(--gold) 0%,
+                    var(--gold) var(--slider-pct, 0%),
+                    var(--border-main) var(--slider-pct, 0%),
+                    var(--border-main) 100%);
         }
 
-        /* ── Light mode text ── */
-        html:not(.dark) .text-gray-900 {
-            color: #111827;
+        html.dark .installment-slider {
+            background: linear-gradient(to right,
+                    var(--gold-light) 0%,
+                    var(--gold-light) var(--slider-pct, 0%),
+                    var(--border-main) var(--slider-pct, 0%),
+                    var(--border-main) 100%);
         }
 
-        html:not(.dark) .text-gray-700 {
-            color: #374151;
+        /* ── Success modal ── */
+        #success-modal>div:not(.absolute) {
+            background-color: var(--bg-shell) !important;
+            color: var(--text-primary) !important;
         }
 
-        html:not(.dark) .text-gray-600 {
-            color: #4B5563;
+        /* ════════════════════════════════════════════
+           MOBILE & TABLET RESPONSIVE
+           ════════════════════════════════════════════ */
+
+        /* Wallet cards — fix text clipping on mobile */
+        .wallet-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            min-width: 0;
         }
 
-        html:not(.dark) .text-gray-500 {
-            color: #6B7280;
+        .wallet-label .wallet-text {
+            min-width: 0;
+            flex: 1;
         }
 
-        /* ── Autofill override for dark mode ── */
-        .dark input:-webkit-autofill,
-        .dark input:-webkit-autofill:hover,
-        .dark input:-webkit-autofill:focus {
-            -webkit-box-shadow: 0 0 0px 1000px #1f1f1f inset !important;
-            -webkit-text-fill-color: #e5e7eb !important;
-            border-color: #3a3a3a !important;
+        .wallet-label .wallet-text span {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        /* ── Dark mode warning / info box text ── */
-        .dark .text-gray-700 {
-            color: #D1D5DB !important;
-        }
-
-        .dark .text-gray-800 {
-            color: #E5E7EB !important;
-        }
-
-        .dark .dark\:text-gray-300 {
-            color: #D1D5DB !important;
-        }
-
-        /* ── Light mode - ensure inputs have good contrast ── */
-        html:not(.dark) input[type="text"],
-        html:not(.dark) input[type="password"],
-        html:not(.dark) select {
-            background-color: #ffffff;
-            color: #111827;
-        }
-
-        @media (max-width: 640px) {
-            .payment-tabs button {
-                padding: 8px 10px;
-                font-size: 12px;
-            }
-
-            .card-container {
-                height: 180px !important;
-            }
-
-            #card-number-display {
-                font-size: 1rem !important;
-                letter-spacing: 0.15em;
-            }
-
-            .bank-grid {
-                display: flex;
+        /* On sm+ screens, stack vertically */
+        @media (min-width: 640px) {
+            .wallet-label {
                 flex-direction: column;
-                gap: 4px;
+                align-items: center;
+                padding: 20px;
+                gap: 0;
             }
 
-            .bank-grid span:not(.font-medium) {
-                padding-left: 8px;
-                margin-bottom: 6px;
+            .wallet-label .wallet-icon {
+                margin-bottom: 12px;
+            }
+
+            .wallet-label .wallet-text {
+                text-align: center;
+            }
+
+            .wallet-label .wallet-text span {
+                white-space: normal;
+                overflow: visible;
+                text-overflow: unset;
             }
         }
 
-        @media (max-width: 768px) {
+        /* Tab bar — horizontal scroll on small screens */
+        .payment-tabs {
+            scrollbar-width: none;
+        }
+
+        @media (max-width: 480px) {
+            .payment-tabs button {
+                font-size: 11px;
+                padding: 8px 8px;
+                flex-shrink: 0;
+            }
+        }
+
+        /* Two-col form → single col on mobile */
+        @media (max-width: 640px) {
             .two-col-form {
                 grid-template-columns: 1fr !important;
             }
 
+            .bank-details-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .card-container {
+                height: 175px !important;
+            }
+
+            #card-number-display {
+                font-size: 1rem !important;
+                letter-spacing: 0.1em;
+            }
+        }
+
+        /* Body padding on very small screens */
+        @media (max-width: 380px) {
+            body {
+                padding: 8px !important;
+            }
+
+            .payment-shell {
+                border-radius: 12px !important;
+            }
+        }
+
+        @media (max-width: 768px) {
             #theme-controls {
                 width: 100%;
                 justify-content: flex-start;
@@ -559,14 +702,18 @@
             .payment-shell {
                 border-radius: 14px;
             }
+        }
 
-            .payment-main {
-                gap: 0;
-            }
+        /* Fix card logo container not clipping */
+        #card-logo-container {
+            pointer-events: none;
+            z-index: 10;
+        }
 
-            .bank-details-grid {
-                grid-template-columns: 1fr;
-            }
+        /* Fix input overflow for logo */
+        .card-number-wrapper {
+            position: relative;
+            overflow: visible;
         }
     </style>
 </head>
@@ -857,11 +1004,12 @@
                             <label
                                 class="block text-xs sm:text-sm font-medium text-gray-700 dark:text-dark-900 mb-1 dark-mode-transition">Card
                                 Number</label>
-                            <div class="relative">
+                            <div class="relative overflow-visible">
                                 <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19"
-                                    class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
+                                    class="input-gold w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-16 border border-gray-300 dark:border-dark-600 dark:bg-dark-400 dark:text-dark-900 rounded-md shadow-sm text-sm dark-mode-transition">
                                 <div id="card-logo-container"
-                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 opacity-0 transition-all duration-300 scale-75">
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 transition-all duration-300"
+                                    style="opacity:0; transform: translateY(-50%) scale(0.8);">
                                     <!-- Card logo will be inserted here -->
                                 </div>
                             </div>
@@ -890,8 +1038,8 @@
                             <input type="radio" id="apple-pay" name="wallet-type" value="apple"
                                 class="radio-card hidden" checked>
                             <label for="apple-pay"
-                                class="flex flex-row sm:flex-col items-center p-4 sm:p-6 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition h-full gap-3 sm:gap-0">
-                                <div class="w-10 h-10 sm:w-12 sm:h-12 sm:mb-4 flex-shrink-0">
+                                class="wallet-label border border-gray-300 dark:border-dark-600 dark-mode-transition h-full">
+                                <div class="wallet-icon w-10 h-10 flex-shrink-0">
                                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path
                                             d="M18.7101 12.6754C18.7242 10.9892 19.6992 9.43546 21.2101 8.61377C20.3101 7.30377 18.8901 6.54377 17.3801 6.48377C15.7801 6.31377 14.2501 7.41377 13.4401 7.41377C12.6101 7.41377 11.3501 6.50377 10.0001 6.53377C8.21008 6.58377 6.58008 7.59377 5.68008 9.13377C3.78008 12.2138 5.15008 16.7938 7.00008 19.2138C7.92008 20.3938 8.98008 21.7138 10.3901 21.6638C11.7701 21.6138 12.3001 20.7938 13.9501 20.7938C15.5701 20.7938 16.0701 21.6638 17.5001 21.6338C18.9701 21.6138 19.9401 20.4538 20.8301 19.2638C21.5301 18.3438 22.0501 17.2938 22.3701 16.1738C20.5301 15.3638 19.3701 13.6138 18.7101 12.6754Z"
@@ -903,9 +1051,9 @@
                                             class="text-gray-900 dark:text-white dark-mode-transition" />
                                     </svg>
                                 </div>
-                                <div class="text-left sm:text-center">
+                                <div class="wallet-text">
                                     <span
-                                        class="block text-sm font-medium text-gray-900 dark:text-white mb-0.5 dark-mode-transition">Apple
+                                        class="text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Apple
                                         Pay</span>
                                     <span class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition">Pay
                                         securely with Apple</span>
@@ -917,26 +1065,22 @@
                             <input type="radio" id="google-pay" name="wallet-type" value="google"
                                 class="radio-card hidden">
                             <label for="google-pay"
-                                class="flex flex-row sm:flex-col items-center p-4 sm:p-6 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition h-full gap-3 sm:gap-0">
-                                <div class="w-10 h-10 sm:w-12 sm:h-12 sm:mb-4 flex-shrink-0">
-                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M21.5 11.9999C21.5 11.1799 21.43 10.3899 21.3 9.63989H12V13.2799H17.36C17.15 14.3599 16.46 15.2599 15.41 15.8599V18.0399H18.46C20.21 16.4099 21.5 14.4199 21.5 11.9999Z"
-                                            fill="#4285F4" />
-                                        <path
-                                            d="M12 22C14.7 22 16.96 21.07 18.46 19.04L15.41 16.86C14.56 17.41 13.42 17.75 12 17.75C9.47 17.75 7.34 16.06 6.5 13.78H3.35V16.03C4.84 19.57 8.14 22 12 22Z"
-                                            fill="#34A853" />
-                                        <path
-                                            d="M6.5 13.7799C6.32 13.1699 6.22 12.5299 6.22 11.8699C6.22 11.2099 6.32 10.5699 6.5 9.95988V7.70988H3.35C2.67 9.03988 2.25 10.5299 2.25 11.8699C2.25 13.2099 2.67 14.6999 3.35 16.0299L6.5 13.7799Z"
-                                            fill="#FBBC05" />
-                                        <path
-                                            d="M12 6C13.38 6 14.63 6.48 15.61 7.42L18.31 4.72C16.95 3.45 14.7 2.75 12 2.75C8.14 2.75 4.84 5.18 3.35 8.72L6.5 10.97C7.34 8.69 9.47 7 12 7V6Z"
-                                            fill="#EA4335" />
+                                class="wallet-label border border-gray-300 dark:border-dark-600 dark-mode-transition h-full">
+                                <div class="wallet-icon w-10 h-10 flex-shrink-0">
+                                    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill="#4285F4"
+                                            d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z" />
+                                        <path fill="#34A853"
+                                            d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z" />
+                                        <path fill="#FBBC05"
+                                            d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z" />
+                                        <path fill="#EA4335"
+                                            d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z" />
                                     </svg>
                                 </div>
-                                <div class="text-left sm:text-center">
+                                <div class="wallet-text">
                                     <span
-                                        class="block text-sm font-medium text-gray-900 dark:text-white mb-0.5 dark-mode-transition">Google
+                                        class="text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Google
                                         Pay</span>
                                     <span class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition">Fast
                                         checkout with Google</span>
@@ -948,8 +1092,8 @@
                             <input type="radio" id="samsung-pay" name="wallet-type" value="samsung"
                                 class="radio-card hidden">
                             <label for="samsung-pay"
-                                class="flex flex-row sm:flex-col items-center p-4 sm:p-6 border border-gray-300 dark:border-dark-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-500 dark-mode-transition h-full gap-3 sm:gap-0">
-                                <div class="w-10 h-10 sm:w-12 sm:h-12 sm:mb-4 flex-shrink-0">
+                                class="wallet-label border border-gray-300 dark:border-dark-600 dark-mode-transition h-full">
+                                <div class="wallet-icon w-10 h-10 flex-shrink-0">
                                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path
                                             d="M19.8 5.8H4.2C3.54 5.8 3 6.34 3 7V17C3 17.66 3.54 18.2 4.2 18.2H19.8C20.46 18.2 21 17.66 21 17V7C21 6.34 20.46 5.8 19.8 5.8Z"
@@ -963,9 +1107,9 @@
                                             fill="white" />
                                     </svg>
                                 </div>
-                                <div class="text-left sm:text-center">
+                                <div class="wallet-text">
                                     <span
-                                        class="block text-sm font-medium text-gray-900 dark:text-white mb-0.5 dark-mode-transition">Samsung
+                                        class="text-sm font-medium text-gray-900 dark:text-white dark-mode-transition">Samsung
                                         Pay</span>
                                     <span class="text-xs text-gray-500 dark:text-dark-700 dark-mode-transition">Pay with
                                         Samsung device</span>
@@ -1864,24 +2008,32 @@
             cvvInput.placeholder = cvvLength === 4 ? '1234' : '123';
         }
 
-        // Reset card to default state
+        // Reset card to default state (no logo shown)
         function resetCardToDefault() {
-            const defaultNetwork = {
-                name: 'Card',
-                key: 'unknown',
-                cvvLength: 3,
-                color: '#D4A017', // Gold color
-                logo: `<svg viewBox="0 0 24 24" class="w-6 h-6"><rect width="24" height="24" rx="2" fill="#D4A017"/><text x="12" y="15" text-anchor="middle" fill="white" font-size="8" font-weight="bold">CARD</text></svg>`
-            };
-
-            updateCardVisuals(defaultNetwork);
-            updateInputStyling(defaultNetwork);
+            const cardVisual = document.querySelector('.card-visual-front');
+            const cardBrandElement = document.getElementById('card-brand');
+            cardVisual.style.background = 'linear-gradient(135deg, #1a1200 0%, #3a2900 50%, #1a1200 100%)';
+            cardVisual.style.border = '1px solid rgba(212,160,23,0.3)';
+            cardBrandElement.textContent = 'CARD';
+            cardBrandElement.style.color = 'var(--gold-light)';
+            updateInputStyling(null, false);
         }
 
         // Update input field styling and logo
-        function updateInputStyling(network) {
+        function updateInputStyling(network, hasInput = true) {
             const cardNumberInput = document.getElementById('card-number');
             const cardLogoContainer = document.getElementById('card-logo-container');
+
+            if (!hasInput) {
+                // No input — hide logo, reset border
+                cardNumberInput.style.borderColor = '';
+                cardNumberInput.style.boxShadow = '';
+                if (cardLogoContainer) {
+                    cardLogoContainer.style.opacity = '0';
+                    cardLogoContainer.style.transform = 'translateY(-50%) scale(0.8)';
+                }
+                return;
+            }
 
             // Update input border color
             cardNumberInput.style.borderColor = network.color;
@@ -1891,7 +2043,7 @@
             if (cardLogoContainer) {
                 cardLogoContainer.innerHTML = network.logo;
                 cardLogoContainer.style.opacity = '1';
-                cardLogoContainer.style.transform = 'scale(1)';
+                cardLogoContainer.style.transform = 'translateY(-50%) scale(1)';
             }
         }
 
@@ -1954,7 +2106,7 @@
             } else {
                 const network = detectCardNetwork(value);
                 updateCardVisuals(network);
-                updateInputStyling(network);
+                updateInputStyling(network, true);
             }
 
             // Update CVV settings based on detected network
