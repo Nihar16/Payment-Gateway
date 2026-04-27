@@ -6,39 +6,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Payment Gateway</title>
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        gold: {
-                            50: '#FFFBEA',
-                            100: '#FFF3C4',
-                            200: '#FFE280',
-                            300: '#FFD033',
-                            400: '#F5C000',
-                            500: '#D4A017',
-                            600: '#B8860B',
-                            700: '#8B6508',
-                            800: '#5C4205',
-                            900: '#3A2903',
-                        },
-                        dark: {
-                            50: '#1a1a1a',
-                            100: '#141414',
-                            200: '#0d0d0d',
-                            300: '#080808',
-                            400: '#1f1f1f',
-                            500: '#2a2a2a',
-                            600: '#3a3a3a',
-                            700: '#555555',
-                            800: '#888888',
-                            900: '#cccccc',
+        tailwind = {
+            config: {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        colors: {
+                            gold: {
+                                50: '#FFFBEA',
+                                100: '#FFF3C4',
+                                200: '#FFE280',
+                                300: '#FFD033',
+                                400: '#F5C000',
+                                500: '#D4A017',
+                                600: '#B8860B',
+                                700: '#8B6508',
+                                800: '#5C4205',
+                                900: '#3A2903',
+                            },
+                            dark: {
+                                50: '#1a1a1a',
+                                100: '#141414',
+                                200: '#0d0d0d',
+                                300: '#080808',
+                                400: '#1f1f1f',
+                                500: '#2a2a2a',
+                                600: '#3a3a3a',
+                                700: '#555555',
+                                800: '#888888',
+                                900: '#cccccc',
+                            }
                         }
                     }
                 }
             }
-        }
+        };
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -456,7 +458,7 @@
         }
 
         /* ── All text ── */
-        .text-white,
+        .text-white:not(.card-visual-front *):not(.card-visual-back *),
         .text-gray-900,
         h2,
         h3,
@@ -959,16 +961,16 @@
                                     </div>
                                     <div class="flex justify-between items-end">
                                         <div>
-                                            <div class="text-xs" style="color:rgba(212,160,23,0.6)">Card Holder</div>
+                                            <div class="text-xs" style="color:rgba(212,160,23,0.7)">Card Holder</div>
                                             <div id="name-display"
-                                                class="font-medium mt-1 text-xs sm:text-sm md:text-base text-white">YOUR
-                                                NAME</div>
+                                                class="font-medium mt-1 text-xs sm:text-sm md:text-base"
+                                                style="color:#ffffff !important">YOUR NAME</div>
                                         </div>
                                         <div>
-                                            <div class="text-xs" style="color:rgba(212,160,23,0.6)">Expires</div>
+                                            <div class="text-xs" style="color:rgba(212,160,23,0.7)">Expires</div>
                                             <div id="expiry-display"
-                                                class="font-medium mt-1 text-xs sm:text-sm md:text-base text-white">
-                                                MM/YY</div>
+                                                class="font-medium mt-1 text-xs sm:text-sm md:text-base"
+                                                style="color:#ffffff !important">MM/YY</div>
                                         </div>
                                     </div>
                                 </div>
@@ -2121,16 +2123,68 @@
             updateCustomerDetails();
         });
 
-        // Format expiry date
-        expiryInput.addEventListener('input', function (e) {
-            let value = e.target.value.replace(/\D/g, '');
+        // Format expiry date — MM/YY with month clamping and smart slash
+        expiryInput.addEventListener('keydown', function (e) {
+            // Allow: backspace, delete, tab, arrows
+            if ([8, 9, 37, 38, 39, 40, 46].includes(e.keyCode)) return;
+            // Block anything that isn't a digit
+            if (e.key && !/^\d$/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
 
-            if (value.length > 2) {
-                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        expiryInput.addEventListener('input', function (e) {
+            const isDeleting = e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward';
+
+            // Strip everything except digits
+            let digits = e.target.value.replace(/\D/g, '').substring(0, 4);
+
+            let month = digits.substring(0, 2);
+            let year = digits.substring(2, 4);
+
+            // Smart month clamping
+            if (month.length === 1) {
+                // If first digit > 1, it can only be a valid month if prepended with 0
+                if (parseInt(month) > 1) {
+                    month = '0' + month;
+                }
+            } else if (month.length === 2) {
+                let m = parseInt(month);
+                if (m === 0) month = '01';           // 00 → 01
+                else if (m > 12) month = '12';       // 13-99 → 12
             }
 
-            e.target.value = value;
-            expiryDisplay.textContent = value || 'MM/YY';
+            // Build formatted value
+            let formatted = month;
+            if (month.length === 2 && !isDeleting) {
+                formatted = month + '/' + year;
+            } else if (month.length === 2 && year.length > 0) {
+                formatted = month + '/' + year;
+            }
+
+            e.target.value = formatted;
+
+            // Update card display
+            const display = formatted.length > 0 ? formatted : 'MM/YY';
+            expiryDisplay.textContent = display;
+
+            // Validation hint
+            if (month.length === 2 && year.length === 2) {
+                const now = new Date();
+                const currentYear = now.getFullYear() % 100;
+                const currentMonth = now.getMonth() + 1;
+                const enteredYear = parseInt(year);
+                const enteredMonth = parseInt(month);
+                const isExpired = (enteredYear < currentYear) ||
+                    (enteredYear === currentYear && enteredMonth < currentMonth);
+                expiryInput.style.borderColor = isExpired ? '#ef4444' : '';
+                expiryInput.style.boxShadow = isExpired ? '0 0 0 2px rgba(239,68,68,0.2)' : '';
+                expiryInput.title = isExpired ? 'This card has expired' : '';
+            } else {
+                expiryInput.style.borderColor = '';
+                expiryInput.style.boxShadow = '';
+                expiryInput.title = '';
+            }
         });
 
         // Update name display
@@ -2316,7 +2370,93 @@
         const senderIban = document.getElementById('sender-iban');
         const senderSwift = document.getElementById('sender-swift');
 
+        // ── Expiry validation helper ──────────────────────────────
+        function getExpiryState() {
+            const val = expiryInput.value;
+            const parts = val.split('/');
+            if (parts.length !== 2 || parts[0].length !== 2 || parts[1].length !== 2) {
+                return { valid: false, expired: false, reason: 'incomplete' };
+            }
+            const month = parseInt(parts[0]);
+            const year = parseInt(parts[1]);
+            if (month < 1 || month > 12) return { valid: false, expired: false, reason: 'invalid month' };
+            const now = new Date();
+            const cy = now.getFullYear() % 100;
+            const cm = now.getMonth() + 1;
+            const expired = (year < cy) || (year === cy && month < cm);
+            return { valid: true, expired, reason: expired ? 'expired' : 'ok' };
+        }
+
+        function showFieldError(input, msg) {
+            input.style.borderColor = '#ef4444';
+            input.style.boxShadow = '0 0 0 2px rgba(239,68,68,0.25)';
+            input.title = msg;
+            // Shake animation
+            input.animate([
+                { transform: 'translateX(0)' },
+                { transform: 'translateX(-5px)' },
+                { transform: 'translateX(5px)' },
+                { transform: 'translateX(-4px)' },
+                { transform: 'translateX(4px)' },
+                { transform: 'translateX(0)' }
+            ], { duration: 320, easing: 'ease-out' });
+        }
+
+        function clearFieldError(input) {
+            input.style.borderColor = '';
+            input.style.boxShadow = '';
+            input.title = '';
+        }
+
+        // Clear errors on fix
+        [cardNumberInput, nameInput, cvvInput].forEach(el => {
+            el.addEventListener('input', () => clearFieldError(el));
+        });
+        expiryInput.addEventListener('input', () => {
+            const state = getExpiryState();
+            if (!state.expired) clearFieldError(expiryInput);
+        });
+
         payButton.addEventListener('click', function () {
+            let hasError = false;
+
+            // 1. Card number
+            const rawNum = cardNumberInput.value.replace(/\s/g, '');
+            if (rawNum.length < 13) {
+                showFieldError(cardNumberInput, 'Please enter a valid card number');
+                hasError = true;
+            }
+
+            // 2. Cardholder name
+            if (!nameInput.value.trim()) {
+                showFieldError(nameInput, 'Please enter the cardholder name');
+                hasError = true;
+            }
+
+            // 3. Expiry
+            const expiry = getExpiryState();
+            if (expiry.reason === 'incomplete') {
+                showFieldError(expiryInput, 'Please enter a valid expiry date (MM/YY)');
+                hasError = true;
+            } else if (expiry.expired) {
+                showFieldError(expiryInput, 'This card has expired — please use a different card');
+                hasError = true;
+            }
+
+            // 4. CVV
+            if (cvvInput.value.length < 3) {
+                showFieldError(cvvInput, 'Please enter a valid CVV');
+                hasError = true;
+            }
+
+            if (hasError) {
+                // Scroll first error into view
+                const firstError = [cardNumberInput, nameInput, expiryInput, cvvInput]
+                    .find(el => el.style.borderColor === 'rgb(239, 68, 68)' || el.style.borderColor === '#ef4444');
+                if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
             successMethod.textContent = cardTypeDisplay.textContent;
             successModal.classList.remove('hidden');
         });
