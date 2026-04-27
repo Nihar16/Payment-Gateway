@@ -3,17 +3,6 @@
 A secure, enterprise-grade payment processing system designed for  establishments with PCI-DSS compliance, advanced fraud prevention, multi-currency support, and integrated wallet solutions.
 
 **[Full Architecture Documentation & API Guide Below]**
-
-## Features
-
-- **PCI-DSS Level 1 Compliant**: Zero card data storage using Stripe Elements tokenization
-- **Advanced Fraud Detection**: Stripe Radar integration with ML-powered anomaly detection
-- **Multi-Currency Support**: Real-time currency detection and dynamic conversion
-- **Digital Wallets**: Apple Pay and Google Pay integration
-- **Enterprise Security**: TLS 1.3, Content Security Policy, security headers, rate limiting
-- **Global Infrastructure**: CDN optimization, WAF protection, multi-region availability
-- **Comprehensive Logging**: Structured logging with error tracking and audit trails
-
 ---
 
 ## Architecture Overview
@@ -751,16 +740,16 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 🗺️ Roadmap
 
-### Upcoming Features
+## Features
 
-- [ ] Mobile SDK development
-- [ ] Cryptocurrency payment support
-- [ ] Advanced fraud detection with AI/ML
-- [ ] Multi-tenant architecture
-- [ ] GraphQL API support
-- [ ] Real-time transaction streaming
-- [ ] Enhanced analytics dashboard
-- [ ] International payment methods
+- **PCI-DSS Level 1 Compliant**: Zero card data storage using Stripe Elements tokenization
+- **Advanced Fraud Detection**: Stripe Radar integration with ML-powered anomaly detection
+- **Multi-Currency Support**: Real-time currency detection and dynamic conversion
+- **Digital Wallets**: Apple Pay and Google Pay integration
+- **Enterprise Security**: TLS 1.3, Content Security Policy, security headers, rate limiting
+- **Global Infrastructure**: CDN optimization, WAF protection, multi-region availability
+- **Comprehensive Logging**: Structured logging with error tracking and audit trails
+
 
 ### Version History
 
